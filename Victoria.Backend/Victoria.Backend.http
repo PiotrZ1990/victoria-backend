@@ -1,0 +1,6 @@
+@Victoria.Backend_HostAddress = http://localhost:5028
+
+GET {{Victoria.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

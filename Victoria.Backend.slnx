@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Victoria.Application/Victoria.Application.csproj" />
+  <Project Path="Victoria.Backend/Victoria.Backend.csproj" />
+  <Project Path="Victoria.Domain/Victoria.Domain.csproj" />
+  <Project Path="Victoria.Infrastructure/Victoria.Infrastructure.csproj" />
+</Solution>
