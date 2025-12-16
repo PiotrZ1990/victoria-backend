@@ -16,6 +16,7 @@ namespace Victoria.Domain.Entities.Cases
 
         // Etap sprawy: np. Planning, Applying, Visa, Accommodation, Completed
         public CaseStage Stage { get; set; }
+        public string? InternalNotes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
