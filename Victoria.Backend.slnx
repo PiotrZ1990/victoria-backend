@@ -3,4 +3,5 @@
   <Project Path="Victoria.Backend/Victoria.Backend.csproj" />
   <Project Path="Victoria.Domain/Victoria.Domain.csproj" />
   <Project Path="Victoria.Infrastructure/Victoria.Infrastructure.csproj" />
+  <Project Path="Victoria.Web/Victoria.Web.csproj" Id="bc13a119-a3ca-4178-8cb3-10cc9ce27d29" />
 </Solution>

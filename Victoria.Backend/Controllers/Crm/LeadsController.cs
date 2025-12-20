@@ -56,6 +56,7 @@ public class LeadsController : ControllerBase
     // =========================
     [HttpGet("{id:int}")]
     [Authorize(Roles = "Staff,Admin")]
+    //[AllowAnonymous]
     public async Task<IActionResult> GetLeadById(int id)
     {
         var lead = await _dbContext.Leads.FindAsync(id);
@@ -72,6 +73,7 @@ public class LeadsController : ControllerBase
     // =========================
     [HttpGet]
     [Authorize(Roles = "Staff,Admin")]
+    //[AllowAnonymous]
     public async Task<IActionResult> GetAllLeads()
     {
         var leads = await _dbContext.Leads
