@@ -8,6 +8,8 @@ namespace Victoria.Domain.Entities.Documents
 
         public string DocumentType { get; set; }  // SOP, CV, Passport, OfferLetter
 
+        public string? Description { get; set; } // ⬅️ NOWE (opcjonalne)
+
         public int FileResourceId { get; set; }
         public FileResource FileResource { get; set; }
 

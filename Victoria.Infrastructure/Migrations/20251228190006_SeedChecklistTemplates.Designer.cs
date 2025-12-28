@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Victoria.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Victoria.Infrastructure.Data;
 namespace Victoria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251228190006_SeedChecklistTemplates")]
+    partial class SeedChecklistTemplates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -601,9 +604,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DocumentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -620,24 +620,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasIndex("FileResourceId");
 
                     b.ToTable("Documents");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DocumentType = "Passport scan (DEMO)",
-                            FileResourceId = 1,
-                            Status = "Uploaded"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DocumentType = "Acceptance letter (DEMO)",
-                            FileResourceId = 2,
-                            Status = "Uploaded"
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Documents.VisaDocument", b =>
@@ -926,26 +908,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FileResources");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ContentType = "application/pdf",
-                            FileName = "passport-scan-demo.pdf",
-                            FilePath = "seed/passport-scan-demo.pdf",
-                            FileSize = 123456L,
-                            UploadedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ContentType = "application/pdf",
-                            FileName = "acceptance-letter-demo.pdf",
-                            FilePath = "seed/acceptance-letter-demo.pdf",
-                            FileSize = 234567L,
-                            UploadedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Payments.Invoice", b =>

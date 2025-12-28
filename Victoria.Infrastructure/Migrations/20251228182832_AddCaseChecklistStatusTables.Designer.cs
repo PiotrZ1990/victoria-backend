@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Victoria.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Victoria.Infrastructure.Data;
 namespace Victoria.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251228182832_AddCaseChecklistStatusTables")]
+    partial class AddCaseChecklistStatusTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -480,44 +483,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ApplicationDocumentChecklists");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DocumentType = "Passport scan",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DocumentType = "CV",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DocumentType = "Motivation letter",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DocumentType = "School certificates / diplomas",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DocumentType = "English test certificate (optional)",
-                            IsRequired = false
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DocumentType = "Proof of funds (if needed)",
-                            IsRequired = false
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Documents.CaseApplicationChecklistItem", b =>
@@ -601,9 +566,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DocumentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -620,24 +582,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasIndex("FileResourceId");
 
                     b.ToTable("Documents");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DocumentType = "Passport scan (DEMO)",
-                            FileResourceId = 1,
-                            Status = "Uploaded"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DocumentType = "Acceptance letter (DEMO)",
-                            FileResourceId = 2,
-                            Status = "Uploaded"
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Documents.VisaDocument", b =>
@@ -681,44 +625,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VisaDocumentChecklists");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DocumentType = "Passport",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DocumentType = "Acceptance letter",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DocumentType = "Visa application form",
-                            IsRequired = true
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DocumentType = "Proof of accommodation",
-                            IsRequired = false
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DocumentType = "Travel insurance",
-                            IsRequired = false
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DocumentType = "Bank statements / proof of funds",
-                            IsRequired = true
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Education.CourseGroup", b =>
@@ -926,26 +832,6 @@ namespace Victoria.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FileResources");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ContentType = "application/pdf",
-                            FileName = "passport-scan-demo.pdf",
-                            FilePath = "seed/passport-scan-demo.pdf",
-                            FileSize = 123456L,
-                            UploadedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ContentType = "application/pdf",
-                            FileName = "acceptance-letter-demo.pdf",
-                            FilePath = "seed/acceptance-letter-demo.pdf",
-                            FileSize = 234567L,
-                            UploadedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("Victoria.Domain.Entities.Payments.Invoice", b =>

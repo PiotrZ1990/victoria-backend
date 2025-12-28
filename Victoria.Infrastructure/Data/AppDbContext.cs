@@ -36,8 +36,8 @@ namespace Victoria.Infrastructure.Data
         public DbSet<VisaApplication> VisaApplications { get; set; }
         public DbSet<AccommodationRequest> AccommodationRequests { get; set; }
         public DbSet<AccommodationBooking> AccommodationBookings { get; set; }
-        public DbSet<FileResource> FileResources { get; set; }
-        public DbSet<Document> Documents { get; set; }
+        public DbSet<FileResource> FileResources => Set<FileResource>();
+        public DbSet<Document> Documents => Set<Document>();
         public DbSet<ApplicationDocument> ApplicationDocuments { get; set; }
         public DbSet<VisaDocument> VisaDocuments { get; set; }
         public DbSet<ApplicationDocumentChecklist> ApplicationDocumentChecklists { get; set; }
@@ -57,6 +57,8 @@ namespace Victoria.Infrastructure.Data
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Expert> Experts { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<CaseApplicationChecklistItem> CaseApplicationChecklistItems => Set<CaseApplicationChecklistItem>();
+        public DbSet<CaseVisaChecklistItem> CaseVisaChecklistItems => Set<CaseVisaChecklistItem>();
 
 
 
@@ -298,6 +300,57 @@ namespace Victoria.Infrastructure.Data
                 .HasForeignKey(x => x.StudentId);
 
             // =========================
+            // Case checklist items (per CaseFile)
+            // =========================
+
+            modelBuilder.Entity<CaseApplicationChecklistItem>()
+                .HasOne(x => x.CaseFile)
+                .WithMany()
+                .HasForeignKey(x => x.CaseFileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CaseApplicationChecklistItem>()
+                .HasOne(x => x.Checklist)
+                .WithMany()
+                .HasForeignKey(x => x.ChecklistId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CaseApplicationChecklistItem>()
+                .HasOne(x => x.Document)
+                .WithMany()
+                .HasForeignKey(x => x.DocumentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // 1 pozycja checklisty (szablon) ma wystąpić tylko raz na sprawę
+            modelBuilder.Entity<CaseApplicationChecklistItem>()
+                .HasIndex(x => new { x.CaseFileId, x.ChecklistId })
+                .IsUnique();
+
+
+            modelBuilder.Entity<CaseVisaChecklistItem>()
+                .HasOne(x => x.CaseFile)
+                .WithMany()
+                .HasForeignKey(x => x.CaseFileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CaseVisaChecklistItem>()
+                .HasOne(x => x.Checklist)
+                .WithMany()
+                .HasForeignKey(x => x.ChecklistId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CaseVisaChecklistItem>()
+                .HasOne(x => x.Document)
+                .WithMany()
+                .HasForeignKey(x => x.DocumentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<CaseVisaChecklistItem>()
+                .HasIndex(x => new { x.CaseFileId, x.ChecklistId })
+                .IsUnique();
+
+
+            // =========================
             // CMS
             // =========================
             modelBuilder.Entity<Page>()
@@ -312,6 +365,68 @@ namespace Victoria.Infrastructure.Data
             modelBuilder.Entity<Setting>()
                 .HasIndex(x => x.Key)
                 .IsUnique();
+
+            modelBuilder.Entity<ApplicationDocumentChecklist>().HasData(
+                new ApplicationDocumentChecklist { Id = 1, DocumentType = "Passport scan", IsRequired = true },
+                new ApplicationDocumentChecklist { Id = 2, DocumentType = "CV", IsRequired = true },
+                new ApplicationDocumentChecklist { Id = 3, DocumentType = "Motivation letter", IsRequired = true },
+                new ApplicationDocumentChecklist { Id = 4, DocumentType = "School certificates / diplomas", IsRequired = true },
+                new ApplicationDocumentChecklist { Id = 5, DocumentType = "English test certificate (optional)", IsRequired = false },
+                new ApplicationDocumentChecklist { Id = 6, DocumentType = "Proof of funds (if needed)", IsRequired = false }
+            );
+            modelBuilder.Entity<VisaDocumentChecklist>().HasData(
+                new VisaDocumentChecklist { Id = 1, DocumentType = "Passport", IsRequired = true },
+                new VisaDocumentChecklist { Id = 2, DocumentType = "Acceptance letter", IsRequired = true },
+                new VisaDocumentChecklist { Id = 3, DocumentType = "Visa application form", IsRequired = true },
+                new VisaDocumentChecklist { Id = 4, DocumentType = "Proof of accommodation", IsRequired = false },
+                new VisaDocumentChecklist { Id = 5, DocumentType = "Travel insurance", IsRequired = false },
+                new VisaDocumentChecklist { Id = 6, DocumentType = "Bank statements / proof of funds", IsRequired = true }
+            );
+            // =========================
+            // SEED: FileResources + Documents (do testów checklist)
+            // =========================
+
+            modelBuilder.Entity<FileResource>().HasData(
+                new FileResource
+                {
+                    Id = 1,
+                    FileName = "passport-scan-demo.pdf",
+                    ContentType = "application/pdf",
+                    FileSize = 123456,
+                    FilePath = "seed/passport-scan-demo.pdf",
+                    UploadedAt = new DateTime(2025, 1, 1)
+                },
+                new FileResource
+                {
+                    Id = 2,
+                    FileName = "acceptance-letter-demo.pdf",
+                    ContentType = "application/pdf",
+                    FileSize = 234567,
+                    FilePath = "seed/acceptance-letter-demo.pdf",
+                    UploadedAt = new DateTime(2025, 1, 1)
+                }
+            );
+
+            modelBuilder.Entity<Document>().HasData(
+                new Document
+                {
+                    Id = 1,
+                    DocumentType = "Passport scan (DEMO)",   
+                    Status = "Uploaded",
+                    FileResourceId = 1,
+                    CreatedAt = new DateTime(2025, 1, 1)
+                },
+                new Document
+                {
+                    Id = 2,
+                    DocumentType = "Acceptance letter (DEMO)",
+                    Status = "Uploaded",
+                    FileResourceId = 2,
+                    CreatedAt = new DateTime(2025, 1, 1)
+                }
+            );
+
+
         }
 
 
