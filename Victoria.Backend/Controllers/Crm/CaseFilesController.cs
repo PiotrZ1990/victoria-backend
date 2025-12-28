@@ -94,9 +94,7 @@ public class CaseFilesController : ControllerBase
     // PUT: api/casefiles/{id}
     // =========================================
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(
-        int id,
-        [FromBody] CaseFileUpdateDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] CaseFileUpdateDto dto)
     {
         var caseFile = await _dbContext.CaseFiles
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -104,19 +102,15 @@ public class CaseFilesController : ControllerBase
         if (caseFile == null)
             return NotFound();
 
-        if (!string.IsNullOrWhiteSpace(dto.Stage))
-        {
-            if (!Enum.TryParse<CaseStage>(dto.Stage, true, out var stage))
-                return BadRequest("Invalid case stage");
+        if (!Enum.TryParse<CaseStage>(dto.Stage, true, out var stage))
+            return BadRequest("Invalid stage");
 
-            caseFile.Stage = stage;
-        }
-
+        caseFile.Stage = stage;
         caseFile.InternalNotes = dto.InternalNotes;
 
         await _dbContext.SaveChangesAsync();
 
-        return Ok(MapToGetDto(caseFile));
+        return Ok(caseFile);
     }
 
     // =========================================

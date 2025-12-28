@@ -79,5 +79,39 @@ public class CaseFilesController : Controller
         }
         return View(vm);
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(CaseFileUpdateViewModel vm)
+    {
+        var token = HttpContext.Session.GetString("JWT");
+        if (string.IsNullOrEmpty(token))
+            return RedirectToAction("Login", "Auth");
+
+        var client = _httpClientFactory.CreateClient("BackendApi");
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var payload = new
+        {
+            stage = vm.Stage,
+            internalNotes = vm.InternalNotes
+        };
+
+        var content = new StringContent(
+            System.Text.Json.JsonSerializer.Serialize(payload),
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        var response = await client.PutAsync($"api/casefiles/{vm.Id}", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Update failed. Status={(int)response.StatusCode} {response.StatusCode}. Body={body}");
+        }
+
+        return RedirectToAction(nameof(Details), new { id = vm.Id });
+    }
+
 
 }

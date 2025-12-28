@@ -3,5 +3,5 @@
 public class CaseFileUpdateDto
 {
     public string Stage { get; set; }
-    public string InternalNotes { get; set; }
+    public string? InternalNotes { get; set; }
 }
