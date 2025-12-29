@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Victoria.Backend.DTOs.Documents;
 using Victoria.Domain.Entities.Documents;
 using Victoria.Domain.Entities.Files;
+using Victoria.Domain.Enums;
 using Victoria.Infrastructure.Data;
 
 namespace Victoria.Backend.Controllers.Documents;
@@ -158,5 +159,128 @@ public class DocumentsController : ControllerBase
 
         return Ok(new { doc.Id, doc.Status, doc.Description });
     }
+
+    [HttpPut("{documentId:int}/status")]
+    public async Task<IActionResult> UpdateStatus(int documentId, [FromBody] DocumentStatusUpdateDto dto)
+    {
+        var doc = await _db.Documents
+            .FirstOrDefaultAsync(x => x.Id == documentId);
+
+        if (doc == null)
+            return NotFound("Document not found");
+
+        if (!Enum.TryParse<DocumentStatus>(dto.Status, true, out var newStatus))
+            return BadRequest("Invalid document status");
+
+        doc.Status = newStatus;
+
+        // Jeżeli zatwierdzony => domykamy checklist item (Application albo Visa)
+        // jeśli Approved => domykamy checklist
+        // jeśli Rejected => cofamy checklist
+        if (newStatus == DocumentStatus.Approved || newStatus == DocumentStatus.Rejected)
+        {
+            var markCompleted = newStatus == DocumentStatus.Approved;
+
+            bool anyLinked = false;
+            bool anyChecklistUpdated = false;
+
+            // ==========================
+            // APPLICATION PATH
+            // ApplicationDocument -> StudyApplication -> CaseFileId
+            // ==========================
+            var appLink = await _db.ApplicationDocuments
+                .Include(x => x.StudyApplication)
+                .FirstOrDefaultAsync(x => x.DocumentId == documentId);
+
+            if (appLink != null)
+            {
+                anyLinked = true;
+
+                var caseFileId = appLink.StudyApplication.CaseFileId;
+
+                var item = await _db.CaseApplicationChecklistItems
+                    .Include(x => x.Checklist)
+                    .FirstOrDefaultAsync(x =>
+                        x.CaseFileId == caseFileId &&
+                        x.Checklist.DocumentType == doc.DocumentType);
+
+                if (item != null)
+                {
+                    item.IsCompleted = markCompleted;
+                    anyChecklistUpdated = true;
+                }
+            }
+
+            // ==========================
+            // VISA PATH
+            // VisaDocument -> VisaApplication -> CaseFileId
+            // ==========================
+            var visaLink = await _db.VisaDocuments
+                .Include(x => x.VisaApplication)
+                .FirstOrDefaultAsync(x => x.DocumentId == documentId);
+
+            if (visaLink != null)
+            {
+                anyLinked = true;
+
+                var caseFileId = visaLink.VisaApplication.CaseFileId;
+
+                var item = await _db.CaseVisaChecklistItems
+                    .Include(x => x.Checklist)
+                    .FirstOrDefaultAsync(x =>
+                        x.CaseFileId == caseFileId &&
+                        x.Checklist.DocumentType == doc.DocumentType);
+
+                if (item != null)
+                {
+                    item.IsCompleted = markCompleted;
+                    anyChecklistUpdated = true;
+                }
+            }
+
+            // Czytelne info jak coś nie gra
+            if (!anyLinked)
+                return BadRequest("Document is not linked to StudyApplication or VisaApplication.");
+
+            if (!anyChecklistUpdated)
+                return BadRequest("No matching checklist item found for this document type. Check DocumentType vs Checklist DocumentType.");
+        }
+
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            doc.Id,
+            doc.DocumentType,
+            Status = doc.Status.ToString()
+        });
+    }
+    [HttpPost("attach-to-application")]
+    public async Task<IActionResult> AttachToApplication([FromBody] AttachDocumentDto dto)
+    {
+        var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == dto.DocumentId);
+        if (doc == null) return NotFound("Document not found");
+
+        var app = await _db.StudyApplications.FirstOrDefaultAsync(x => x.Id == dto.StudyApplicationId);
+        if (app == null) return NotFound("StudyApplication not found");
+
+        var exists = await _db.ApplicationDocuments
+            .AnyAsync(x => x.DocumentId == dto.DocumentId && x.StudyApplicationId == dto.StudyApplicationId);
+
+        if (!exists)
+        {
+            _db.ApplicationDocuments.Add(new ApplicationDocument
+            {
+                DocumentId = dto.DocumentId,
+                StudyApplicationId = dto.StudyApplicationId
+            });
+
+            await _db.SaveChangesAsync();
+        }
+
+        return Ok(new { message = "Attached", dto.DocumentId, dto.StudyApplicationId });
+    }
+
 
 }

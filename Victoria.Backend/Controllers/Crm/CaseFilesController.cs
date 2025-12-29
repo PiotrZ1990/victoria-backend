@@ -54,6 +54,42 @@ public class CaseFilesController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
 
+        // ===============================
+        // AUTO-GENERATE CHECKLIST ITEMS FOR NEW CASE
+        // ===============================
+
+        // 1) Application checklist items (dla aplikacji na studia)
+        var appTemplates = await _dbContext.ApplicationDocumentChecklists
+            .ToListAsync();
+
+        foreach (var t in appTemplates)
+        {
+            _dbContext.CaseApplicationChecklistItems.Add(new()
+            {
+                CaseFileId = caseFile.Id,
+                ChecklistId = t.Id,
+                IsCompleted = false
+            });
+        }
+
+        // 2) Visa checklist items (dla wizy)
+        var visaTemplates = await _dbContext.VisaDocumentChecklists
+            .ToListAsync();
+
+        foreach (var t in visaTemplates)
+        {
+            _dbContext.CaseVisaChecklistItems.Add(new()
+            {
+                CaseFileId = caseFile.Id,
+                ChecklistId = t.Id,
+                IsCompleted = false
+            });
+        }
+
+        // zapisujemy nowe checklist itemy
+        await _dbContext.SaveChangesAsync();
+
+
         return Ok(MapToGetDto(caseFile));
     }
 
