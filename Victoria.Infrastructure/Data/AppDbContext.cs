@@ -188,6 +188,12 @@ namespace Victoria.Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(x => x.FileResourceId);
 
+            modelBuilder.Entity<Document>()
+                .Property(x => x.Status)
+                .HasConversion<int>()
+                .IsRequired();
+
+
             modelBuilder.Entity<ApplicationDocument>()
                 .HasOne(x => x.Document)
                 .WithMany()
@@ -412,7 +418,7 @@ namespace Victoria.Infrastructure.Data
                 {
                     Id = 1,
                     DocumentType = "Passport scan (DEMO)",   
-                    Status = "Uploaded",
+                    Status = Domain.Enums.DocumentStatus.Uploaded,
                     FileResourceId = 1,
                     CreatedAt = new DateTime(2025, 1, 1)
                 },
@@ -420,7 +426,7 @@ namespace Victoria.Infrastructure.Data
                 {
                     Id = 2,
                     DocumentType = "Acceptance letter (DEMO)",
-                    Status = "Uploaded",
+                    Status = Domain.Enums.DocumentStatus.Uploaded,
                     FileResourceId = 2,
                     CreatedAt = new DateTime(2025, 1, 1)
                 }

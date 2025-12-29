@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Victoria.Backend.DTOs.Documents;
 using Victoria.Domain.Entities.Documents;
 using Victoria.Domain.Entities.Files;
@@ -69,7 +70,7 @@ public class DocumentsController : ControllerBase
             DocumentType = req.Title,
             Description = req.Description,
             FileResourceId = fileResource.Id,
-            Status = "Uploaded",   // ← KLUCZOWA LINIA
+            Status = Domain.Enums.DocumentStatus.Uploaded,   
             CreatedAt = DateTime.UtcNow
         };
 
@@ -93,4 +94,69 @@ public class DocumentsController : ControllerBase
 
         return Ok(result);
     }
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var doc = await _db.Documents
+            .Include(x => x.FileResource)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (doc == null)
+            return NotFound();
+
+        return Ok(new
+        {
+            doc.Id,
+            doc.DocumentType,
+            doc.Description,
+            doc.Status,
+            doc.CreatedAt,
+            File = new
+            {
+                doc.FileResourceId,
+                doc.FileResource.FileName,
+                doc.FileResource.ContentType,
+                doc.FileResource.FileSize,
+                doc.FileResource.FilePath
+            }
+        });
+    }
+    
+    [HttpPost("{id:int}/approve")]
+    //[Authorize(Roles = "Staff,Admin")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Approve(int id)
+    {
+        var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == id);
+        if (doc == null)
+            return NotFound("Document not found");
+
+        doc.Status = Domain.Enums.DocumentStatus.Approved;
+        await _db.SaveChangesAsync();
+
+        return Ok(new { doc.Id, doc.Status });
+    }
+    
+    [HttpPost("{id:int}/reject")]
+    //[Authorize(Roles = "Staff,Admin")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Reject(int id, [FromBody] DocumentRejectDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Reason))
+            return BadRequest("Reason is required");
+
+        var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == id);
+        if (doc == null)
+            return NotFound("Document not found");
+
+        doc.Status = Domain.Enums.DocumentStatus.Rejected;
+
+        // zapisujemy powód w Description (masz już to pole)
+        doc.Description = dto.Reason;
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new { doc.Id, doc.Status, doc.Description });
+    }
+
 }

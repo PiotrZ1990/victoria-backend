@@ -1,4 +1,5 @@
 ﻿using Victoria.Domain.Entities.Files;
+using Victoria.Domain.Enums;
 
 namespace Victoria.Domain.Entities.Documents
 {
@@ -13,7 +14,7 @@ namespace Victoria.Domain.Entities.Documents
         public int FileResourceId { get; set; }
         public FileResource FileResource { get; set; }
 
-        public string Status { get; set; }        // Uploaded, Approved, Rejected
+        public DocumentStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
