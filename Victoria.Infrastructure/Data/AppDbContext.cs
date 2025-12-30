@@ -33,15 +33,15 @@ namespace Victoria.Infrastructure.Data
         public DbSet<Lead> Leads { get; set; }
         public DbSet<CaseFile> CaseFiles { get; set; }
         public DbSet<StudyApplication> StudyApplications { get; set; }
-        public DbSet<VisaApplication> VisaApplications { get; set; }
+        public DbSet<VisaApplication> VisaApplications => Set<VisaApplication>();
         public DbSet<AccommodationRequest> AccommodationRequests { get; set; }
         public DbSet<AccommodationBooking> AccommodationBookings { get; set; }
         public DbSet<FileResource> FileResources => Set<FileResource>();
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<ApplicationDocument> ApplicationDocuments { get; set; }
-        public DbSet<VisaDocument> VisaDocuments { get; set; }
+        public DbSet<VisaDocument> VisaDocuments => Set<VisaDocument>();
         public DbSet<ApplicationDocumentChecklist> ApplicationDocumentChecklists { get; set; }
-        public DbSet<VisaDocumentChecklist> VisaDocumentChecklists { get; set; }
+        public DbSet<VisaDocumentChecklist> VisaDocumentChecklists => Set<VisaDocumentChecklist>();
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoicePayment> InvoicePayments { get; set; }

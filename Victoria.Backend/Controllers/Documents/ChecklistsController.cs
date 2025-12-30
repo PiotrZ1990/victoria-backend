@@ -223,4 +223,31 @@ public class ChecklistsController : ControllerBase
         return Ok(new { item.Id, item.IsCompleted, item.DocumentId, item.UpdatedAt });
     }
 
+    [HttpPost("seed-visa-items/{caseFileId:int}")]
+    public async Task<IActionResult> SeedVisaItemsForCase(int caseFileId)
+    {
+        var caseFile = await _db.CaseFiles.FirstOrDefaultAsync(x => x.Id == caseFileId);
+        if (caseFile == null) return NotFound("CaseFile not found");
+
+        var templates = await _db.VisaDocumentChecklists.ToListAsync();
+        if (!templates.Any()) return BadRequest("No Visa checklist templates found");
+
+        var already = await _db.CaseVisaChecklistItems.AnyAsync(x => x.CaseFileId == caseFileId);
+        if (already) return Ok("Already seeded");
+
+        foreach (var t in templates)
+        {
+            _db.CaseVisaChecklistItems.Add(new CaseVisaChecklistItem
+            {
+                CaseFileId = caseFileId,
+                ChecklistId = t.Id,
+                IsCompleted = false
+            });
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok("Seeded");
+    }
+
+
 }
