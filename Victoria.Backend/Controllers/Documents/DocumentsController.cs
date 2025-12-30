@@ -35,6 +35,13 @@ public class DocumentsController : ControllerBase
         if (string.IsNullOrWhiteSpace(req.Title))
             return BadRequest("Title is required");
 
+        // musi być podane dokładnie jedno z dwóch
+        if (req.StudyApplicationId.HasValue && req.VisaApplicationId.HasValue)
+            return BadRequest("Provide only StudyApplicationId OR VisaApplicationId.");
+
+        if (!req.StudyApplicationId.HasValue && !req.VisaApplicationId.HasValue)
+            return BadRequest("Provide StudyApplicationId or VisaApplicationId.");
+
         var root = _config["FileStorage:UploadRoot"] ?? "uploads";
         var basePath = Path.Combine(Directory.GetCurrentDirectory(), root);
 
@@ -71,14 +78,47 @@ public class DocumentsController : ControllerBase
             DocumentType = req.Title,
             Description = req.Description,
             FileResourceId = fileResource.Id,
-            Status = Domain.Enums.DocumentStatus.Uploaded,   
+            Status = Domain.Enums.DocumentStatus.Uploaded,
             CreatedAt = DateTime.UtcNow
         };
 
-
-
-
         _db.Documents.Add(document);
+        await _db.SaveChangesAsync();
+
+        // ==========================
+        // AUTO-LINK TO APPLICATION / VISA
+        // ==========================
+
+        if (req.StudyApplicationId.HasValue)
+        {
+            var sa = await _db.StudyApplications
+                .FirstOrDefaultAsync(x => x.Id == req.StudyApplicationId.Value);
+
+            if (sa == null)
+                return NotFound("StudyApplication not found");
+
+            _db.ApplicationDocuments.Add(new ApplicationDocument
+            {
+                StudyApplicationId = sa.Id,
+                DocumentId = document.Id
+            });
+        }
+
+        if (req.VisaApplicationId.HasValue)
+        {
+            var va = await _db.VisaApplications
+                .FirstOrDefaultAsync(x => x.Id == req.VisaApplicationId.Value);
+
+            if (va == null)
+                return NotFound("VisaApplication not found");
+
+            _db.VisaDocuments.Add(new VisaDocument
+            {
+                VisaApplicationId = va.Id,
+                DocumentId = document.Id
+            });
+        }
+
         await _db.SaveChangesAsync();
 
         var result = new DocumentUploadResultDto
@@ -95,6 +135,7 @@ public class DocumentsController : ControllerBase
 
         return Ok(result);
     }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
