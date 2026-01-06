@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Victoria.Backend.DTOs.Cases;
 using Victoria.Backend.DTOs.Crm;
 using Victoria.Domain.Entities.Cases;
 using Victoria.Domain.Enums;
@@ -156,31 +157,71 @@ public class CaseFilesController : ControllerBase
         if (caseFile == null)
             return NotFound("CaseFile not found");
 
-        var requiredApp = await _dbContext.ApplicationDocumentChecklists.CountAsync(x => x.IsRequired);
+        // =========================
+        // APPLICATION
+        // =========================
+        var requiredApp = await _dbContext.ApplicationDocumentChecklists
+            .CountAsync(x => x.IsRequired);
+
         var completedApp = await _dbContext.CaseApplicationChecklistItems
             .Include(x => x.Checklist)
             .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
             .CountAsync();
 
-        var requiredVisa = await _dbContext.VisaDocumentChecklists.CountAsync(x => x.IsRequired);
+        // =========================
+        // VISA
+        // =========================
+        var requiredVisa = await _dbContext.VisaDocumentChecklists
+            .CountAsync(x => x.IsRequired);
+
         var completedVisa = await _dbContext.CaseVisaChecklistItems
             .Include(x => x.Checklist)
             .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
             .CountAsync();
 
-        var canMoveToApplication = completedApp >= requiredApp && requiredApp > 0;
-        var canMoveToVisa = canMoveToApplication && completedVisa >= requiredVisa && requiredVisa > 0;
-        var canMoveToAccommodation = canMoveToVisa;
+        // =========================
+        // ACCOMMODATION
+        // =========================
+        var requiredAcc = await _dbContext.AccommodationDocumentChecklists
+            .CountAsync(x => x.IsRequired);
+
+        var completedAcc = await _dbContext.CaseAccommodationChecklistItems
+            .Include(x => x.Checklist)
+            .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
+            .CountAsync();
+
+        // =========================
+        // BUSINESS RULES
+        // =========================
+        var canMoveToApplication = requiredApp > 0 && completedApp >= requiredApp;
+
+        var canMoveToVisa = canMoveToApplication
+                            && requiredVisa > 0
+                            && completedVisa >= requiredVisa;
+
+        var canMoveToAccommodation = canMoveToVisa
+                                     && requiredAcc > 0
+                                     && completedAcc >= requiredAcc;
+
         var canComplete = canMoveToAccommodation;
 
+        // =========================
+        // RESULT DTO
+        // =========================
         var dto = new CaseReadinessDto
         {
             CaseFileId = caseFile.Id,
             Stage = caseFile.Stage.ToString(),
+
             RequiredApplicationItems = requiredApp,
             CompletedApplicationItems = completedApp,
+
             RequiredVisaItems = requiredVisa,
             CompletedVisaItems = completedVisa,
+
+            RequiredAccommodationItems = requiredAcc,
+            CompletedAccommodationItems = completedAcc,
+
             CanMoveToApplication = canMoveToApplication,
             CanMoveToVisa = canMoveToVisa,
             CanMoveToAccommodation = canMoveToAccommodation,
@@ -189,6 +230,7 @@ public class CaseFilesController : ControllerBase
 
         return Ok(dto);
     }
+
 
     // =========================================
     // CHANGE CASE STAGE (BUSINESS RULES)
@@ -204,33 +246,50 @@ public class CaseFilesController : ControllerBase
         if (!Enum.TryParse<CaseStage>(dto.Stage, true, out var newStage))
             return BadRequest("Invalid stage");
 
-        // policz readiness tak jak w /readiness
+        // =========================
+        // APPLICATION
+        // =========================
         var requiredApp = await _dbContext.ApplicationDocumentChecklists.CountAsync(x => x.IsRequired);
         var completedApp = await _dbContext.CaseApplicationChecklistItems
             .Include(x => x.Checklist)
             .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
             .CountAsync();
 
+        // =========================
+        // VISA
+        // =========================
         var requiredVisa = await _dbContext.VisaDocumentChecklists.CountAsync(x => x.IsRequired);
         var completedVisa = await _dbContext.CaseVisaChecklistItems
             .Include(x => x.Checklist)
             .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
             .CountAsync();
 
-        var canMoveToApplication = completedApp >= requiredApp && requiredApp > 0;
-        var canMoveToVisa = canMoveToApplication && completedVisa >= requiredVisa && requiredVisa > 0;
-        var canMoveToAccommodation = canMoveToVisa;
+        // =========================
+        // ACCOMMODATION
+        // =========================
+        var requiredAcc = await _dbContext.AccommodationDocumentChecklists.CountAsync(x => x.IsRequired);
+        var completedAcc = await _dbContext.CaseAccommodationChecklistItems
+            .Include(x => x.Checklist)
+            .Where(x => x.CaseFileId == id && x.Checklist.IsRequired && x.IsCompleted)
+            .CountAsync();
+
+        // =========================
+        // BUSINESS RULES
+        // =========================
+        var canMoveToApplication = requiredApp > 0 && completedApp >= requiredApp;
+        var canMoveToVisa = canMoveToApplication && requiredVisa > 0 && completedVisa >= requiredVisa;
+        var canMoveToAccommodation = canMoveToVisa && requiredAcc > 0 && completedAcc >= requiredAcc;
         var canComplete = canMoveToAccommodation;
 
         bool allowed = newStage switch
         {
+            CaseStage.New => true,
             CaseStage.Planning => true,
             CaseStage.Application => canMoveToApplication,
             CaseStage.Visa => canMoveToVisa,
             CaseStage.Accommodation => canMoveToAccommodation,
             CaseStage.Completed => canComplete,
             CaseStage.Cancelled => true,
-            CaseStage.New => true,
             _ => false
         };
 
@@ -240,10 +299,16 @@ public class CaseFilesController : ControllerBase
             {
                 message = "Stage change not allowed by business rules",
                 requestedStage = newStage.ToString(),
+
                 requiredApplicationItems = requiredApp,
                 completedApplicationItems = completedApp,
+
                 requiredVisaItems = requiredVisa,
                 completedVisaItems = completedVisa,
+
+                requiredAccommodationItems = requiredAcc,
+                completedAccommodationItems = completedAcc,
+
                 canMoveToApplication,
                 canMoveToVisa,
                 canMoveToAccommodation,
@@ -256,6 +321,7 @@ public class CaseFilesController : ControllerBase
 
         return Ok(new { caseFile.Id, stage = caseFile.Stage.ToString() });
     }
+
 
     // =========================================
     // DELETE CASEFILE (ADMIN ONLY)

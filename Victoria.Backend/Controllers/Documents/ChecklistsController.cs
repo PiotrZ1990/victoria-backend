@@ -248,6 +248,61 @@ public class ChecklistsController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok("Seeded");
     }
+    [HttpPost("seed-accommodation-items/{caseFileId:int}")]
+    public async Task<IActionResult> SeedAccommodationItems(int caseFileId)
+    {
+        var caseFile = await _db.CaseFiles.FirstOrDefaultAsync(x => x.Id == caseFileId);
+        if (caseFile == null) return NotFound("CaseFile not found");
 
+        // templates
+        var templates = await _db.AccommodationDocumentChecklists.ToListAsync();
+        if (!templates.Any())
+        {
+            _db.AccommodationDocumentChecklists.AddRange(
+                new AccommodationDocumentChecklist { DocumentType = "Tenancy agreement / booking confirmation", IsRequired = true },
+                new AccommodationDocumentChecklist { DocumentType = "Address / landlord details", IsRequired = true },
+                new AccommodationDocumentChecklist { DocumentType = "Proof of payment / deposit", IsRequired = true },
+                new AccommodationDocumentChecklist { DocumentType = "Arrival date / check-in info", IsRequired = false },
+                new AccommodationDocumentChecklist { DocumentType = "Emergency contact", IsRequired = false },
+                new AccommodationDocumentChecklist { DocumentType = "Airport pickup details", IsRequired = false }
+            );
+            await _db.SaveChangesAsync();
+            templates = await _db.AccommodationDocumentChecklists.ToListAsync();
+        }
+
+        var already = await _db.CaseAccommodationChecklistItems
+            .AnyAsync(x => x.CaseFileId == caseFileId);
+
+        if (already) return Ok("Already seeded");
+
+        foreach (var t in templates)
+        {
+            _db.CaseAccommodationChecklistItems.Add(new CaseAccommodationChecklistItem
+            {
+                CaseFileId = caseFileId,
+                ChecklistId = t.Id,
+                IsCompleted = false
+            });
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok("Seeded");
+    }
+
+    [HttpPut("accommodation-items/{itemId:int}")]
+    public async Task<IActionResult> UpdateAccommodationItem(int itemId, [FromBody] ChecklistItemUpdateDto dto)
+    {
+        var item = await _db.CaseAccommodationChecklistItems
+            .Include(x => x.Checklist)
+            .FirstOrDefaultAsync(x => x.Id == itemId);
+
+        if (item == null) return NotFound("Item not found");
+
+        item.IsCompleted = dto.IsCompleted;
+        item.CompletedAt = dto.IsCompleted ? DateTime.UtcNow : null;
+
+        await _db.SaveChangesAsync();
+        return Ok(new { item.Id, item.CaseFileId, item.ChecklistId, item.Checklist.DocumentType, item.IsCompleted });
+    }
 
 }

@@ -59,6 +59,8 @@ namespace Victoria.Infrastructure.Data
         public DbSet<Setting> Settings { get; set; }
         public DbSet<CaseApplicationChecklistItem> CaseApplicationChecklistItems => Set<CaseApplicationChecklistItem>();
         public DbSet<CaseVisaChecklistItem> CaseVisaChecklistItems => Set<CaseVisaChecklistItem>();
+        public DbSet<AccommodationDocumentChecklist> AccommodationDocumentChecklists => Set<AccommodationDocumentChecklist>();
+        public DbSet<CaseAccommodationChecklistItem> CaseAccommodationChecklistItems => Set<CaseAccommodationChecklistItem>();
 
 
 
@@ -352,6 +354,25 @@ namespace Victoria.Infrastructure.Data
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<CaseVisaChecklistItem>()
+                .HasIndex(x => new { x.CaseFileId, x.ChecklistId })
+                .IsUnique();
+
+            modelBuilder.Entity<AccommodationDocumentChecklist>()
+                .Property(x => x.DocumentType)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            modelBuilder.Entity<AccommodationDocumentChecklist>()
+                .HasIndex(x => x.DocumentType)
+                .IsUnique();
+
+            modelBuilder.Entity<CaseAccommodationChecklistItem>()
+                .HasOne(x => x.Checklist)
+                .WithMany()
+                .HasForeignKey(x => x.ChecklistId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CaseAccommodationChecklistItem>()
                 .HasIndex(x => new { x.CaseFileId, x.ChecklistId })
                 .IsUnique();
 
