@@ -408,4 +408,55 @@ public class ReportsController : ControllerBase
             fileName);
     }
 
+    // =========================================
+    // REVENUE PER MONTH -> EXCEL EXPORT
+    // GET: api/reports/revenue/monthly/excel
+    // =========================================
+    [HttpGet("revenue/monthly/excel")]
+    public async Task<IActionResult> ExportRevenueMonthlyToExcel()
+    {
+        var rows = await _dbContext.Payments
+            .Where(p => p.Status == Domain.Enums.PaymentStatus.Paid)
+            .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+            .Select(g => new
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalRevenue = g.Sum(x => x.Amount)
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToListAsync();
+
+        using var wb = new XLWorkbook();
+        var ws = wb.Worksheets.Add("Revenue Monthly");
+
+        ws.Cell(1, 1).Value = "Year";
+        ws.Cell(1, 2).Value = "Month";
+        ws.Cell(1, 3).Value = "TotalRevenue";
+
+        ws.Range(1, 1, 1, 3).Style.Font.Bold = true;
+
+        var r = 2;
+        foreach (var x in rows)
+        {
+            ws.Cell(r, 1).Value = x.Year;
+            ws.Cell(r, 2).Value = x.Month;
+            ws.Cell(r, 3).Value = x.TotalRevenue;
+            r++;
+        }
+
+        ws.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        wb.SaveAs(stream);
+        stream.Position = 0;
+
+        var fileName = $"revenue_monthly_{DateTime.UtcNow:yyyyMMdd_HHmm}.xlsx";
+        return File(
+            stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            fileName);
+    }
+
 }
