@@ -1,0 +1,39 @@
+﻿@model List<Victoria.Web.Models.Payments.InvoiceListViewModel>
+
+<h2>Invoices</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Issue date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td>@i.InvoiceNumber</td>
+                <td>@i.IssueDate.ToString("yyyy-MM-dd")</td>
+                <td>@i.TotalAmount @i.Currency</td>
+                <td>@i.Status</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="/Invoices/Details/@i.Id">Details</a>
+                    <a class="btn btn-sm btn-secondary" href="/Invoices/Edit/@i.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

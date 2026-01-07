@@ -10,7 +10,7 @@ namespace Victoria.Backend.Controllers.Payments;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize(Roles = "Staff,Admin")]
+// [Authorize(Roles = "Staff,Admin")]
 [AllowAnonymous]
 public class InvoicesController : ControllerBase
 {
@@ -37,8 +37,15 @@ public class InvoicesController : ControllerBase
         var invoice = new Invoice
         {
             CaseFileId = dto.CaseFileId,
+
+            // jeśli chcesz numer z formularza, a nie auto:
+            // InvoiceNumber = dto.InvoiceNumber,
             InvoiceNumber = $"INV-{DateTime.UtcNow:yyyyMMddHHmmss}",
+
+            // jeśli chcesz datę z formularza:
+            // IssueDate = dto.IssueDate,
             IssueDate = DateTime.UtcNow,
+
             TotalAmount = dto.TotalAmount,
             Currency = dto.Currency,
             Status = InvoiceStatus.Issued,
@@ -82,13 +89,38 @@ public class InvoicesController : ControllerBase
     }
 
     // =========================================
-    // UPDATE INVOICE STATUS
+    // FULL UPDATE INVOICE (EDIT)
+    // PUT: api/invoices/{id}
+    // =========================================
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] InvoiceUpdateDto dto)
+    {
+        var invoice = await _dbContext.Invoices
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (invoice == null)
+            return NotFound();
+
+        if (!Enum.TryParse<InvoiceStatus>(dto.Status, true, out var status))
+            return BadRequest("Invalid invoice status");
+
+        invoice.InvoiceNumber = dto.InvoiceNumber;
+        invoice.IssueDate = dto.IssueDate;
+        invoice.TotalAmount = dto.TotalAmount;
+        invoice.Currency = dto.Currency;
+        invoice.Status = status;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(MapToGetDto(invoice));
+    }
+
+    // =========================================
+    // UPDATE ONLY STATUS
     // PUT: api/invoices/{id}/status
     // =========================================
     [HttpPut("{id:int}/status")]
-    public async Task<IActionResult> UpdateStatus(
-        int id,
-        [FromBody] InvoiceUpdateStatusDto dto)
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] InvoiceUpdateStatusDto dto)
     {
         var invoice = await _dbContext.Invoices
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -103,6 +135,33 @@ public class InvoicesController : ControllerBase
         await _dbContext.SaveChangesAsync();
 
         return Ok(MapToGetDto(invoice));
+    }
+
+    // =========================================
+    // DELETE INVOICE
+    // DELETE: api/invoices/{id}
+    // =========================================
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var invoice = await _dbContext.Invoices
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (invoice == null)
+            return NotFound();
+
+        // jeśli masz InvoicePayments, to najbezpieczniej usunąć powiązania:
+        var links = await _dbContext.InvoicePayments
+            .Where(x => x.InvoiceId == id)
+            .ToListAsync();
+
+        if (links.Count > 0)
+            _dbContext.InvoicePayments.RemoveRange(links);
+
+        _dbContext.Invoices.Remove(invoice);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
     }
 
     // =========================================

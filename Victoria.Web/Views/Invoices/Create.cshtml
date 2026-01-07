@@ -1,0 +1,30 @@
+﻿@model Victoria.Web.Models.Payments.InvoiceCreateViewModel
+<h2>Create invoice</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="CaseFileId" />
+
+    <div class="mb-3">
+        <label class="form-label">Invoice number</label>
+        <input class="form-control" asp-for="InvoiceNumber" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Issue date</label>
+        <input class="form-control" asp-for="IssueDate" type="date" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Total amount</label>
+        <input class="form-control" asp-for="TotalAmount" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Currency</label>
+        <input class="form-control" asp-for="Currency" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Create</button>
+    <a class="btn btn-secondary" href="/Invoices">Cancel</a>
+</form>
