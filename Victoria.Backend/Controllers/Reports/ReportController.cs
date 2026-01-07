@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using Victoria.Backend.DTOs.Reports;
 using Victoria.Infrastructure.Data;
 
@@ -307,6 +309,103 @@ public class ReportsController : ControllerBase
         .ToList();
 
         return Ok(result);
+    }
+
+    // =========================================
+    // OUTSTANDING INVOICES -> EXCEL EXPORT
+    // GET: api/reports/invoices/outstanding/excel
+    // =========================================
+    [HttpGet("invoices/outstanding/excel")]
+    public async Task<IActionResult> ExportOutstandingInvoicesToExcel()
+    {
+        // 1) Pobierz dane jak w /invoices/outstanding
+        var invoices = await _dbContext.Invoices
+            .OrderByDescending(i => i.IssueDate)
+            .ToListAsync();
+
+        var invoiceIds = invoices.Select(x => x.Id).ToList();
+
+        var paidByInvoice = await _dbContext.InvoicePayments
+            .Where(x => invoiceIds.Contains(x.InvoiceId))
+            .Include(x => x.Payment)
+            .GroupBy(x => x.InvoiceId)
+            .Select(g => new
+            {
+                InvoiceId = g.Key,
+                Paid = g.Sum(x => x.Payment.Amount)
+            })
+            .ToListAsync();
+
+        var dictPaid = paidByInvoice.ToDictionary(x => x.InvoiceId, x => x.Paid);
+
+        var rows = invoices
+            .Select(i =>
+            {
+                var paid = dictPaid.TryGetValue(i.Id, out var p) ? p : 0m;
+                var remaining = Math.Max(0m, i.TotalAmount - paid);
+
+                return new
+                {
+                    i.Id,
+                    i.InvoiceNumber,
+                    i.CaseFileId,
+                    i.IssueDate,
+                    i.Currency,
+                    Status = i.Status.ToString(),
+                    Total = i.TotalAmount,
+                    Paid = paid,
+                    Remaining = remaining
+                };
+            })
+            .Where(x => x.Remaining > 0)
+            .OrderByDescending(x => x.Remaining)
+            .ToList();
+
+        // 2) Zrób Excela
+        using var wb = new XLWorkbook();
+        var ws = wb.Worksheets.Add("Outstanding Invoices");
+
+        // Nagłówki
+        ws.Cell(1, 1).Value = "InvoiceId";
+        ws.Cell(1, 2).Value = "InvoiceNumber";
+        ws.Cell(1, 3).Value = "CaseFileId";
+        ws.Cell(1, 4).Value = "IssueDate";
+        ws.Cell(1, 5).Value = "Currency";
+        ws.Cell(1, 6).Value = "Status";
+        ws.Cell(1, 7).Value = "TotalAmount";
+        ws.Cell(1, 8).Value = "PaidAmount";
+        ws.Cell(1, 9).Value = "RemainingAmount";
+
+        ws.Range(1, 1, 1, 9).Style.Font.Bold = true;
+
+        // Dane
+        var r = 2;
+        foreach (var x in rows)
+        {
+            ws.Cell(r, 1).Value = x.Id;
+            ws.Cell(r, 2).Value = x.InvoiceNumber;
+            ws.Cell(r, 3).Value = x.CaseFileId;
+            ws.Cell(r, 4).Value = x.IssueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            ws.Cell(r, 5).Value = x.Currency;
+            ws.Cell(r, 6).Value = x.Status;
+            ws.Cell(r, 7).Value = x.Total;
+            ws.Cell(r, 8).Value = x.Paid;
+            ws.Cell(r, 9).Value = x.Remaining;
+            r++;
+        }
+
+        ws.Columns().AdjustToContents();
+
+        // 3) Zwróć plik
+        using var stream = new MemoryStream();
+        wb.SaveAs(stream);
+        stream.Position = 0;
+
+        var fileName = $"outstanding_invoices_{DateTime.UtcNow:yyyyMMdd_HHmm}.xlsx";
+        return File(
+            stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            fileName);
     }
 
 }
