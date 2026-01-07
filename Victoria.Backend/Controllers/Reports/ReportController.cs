@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using System.Globalization;
 using Victoria.Backend.DTOs.Reports;
 using Victoria.Infrastructure.Data;
@@ -457,6 +460,225 @@ public class ReportsController : ControllerBase
             stream.ToArray(),
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             fileName);
+    }
+
+    // =========================================
+    // OUTSTANDING INVOICES -> PDF EXPORT
+    // GET: api/reports/invoices/outstanding/pdf
+    // =========================================
+    [HttpGet("invoices/outstanding/pdf")]
+    public async Task<IActionResult> ExportOutstandingInvoicesToPdf()
+    {
+        // dane jak w /invoices/outstanding
+        var invoices = await _dbContext.Invoices
+            .OrderByDescending(i => i.IssueDate)
+            .ToListAsync();
+
+        var invoiceIds = invoices.Select(x => x.Id).ToList();
+
+        var paidByInvoice = await _dbContext.InvoicePayments
+            .Where(x => invoiceIds.Contains(x.InvoiceId))
+            .Include(x => x.Payment)
+            .GroupBy(x => x.InvoiceId)
+            .Select(g => new
+            {
+                InvoiceId = g.Key,
+                Paid = g.Sum(x => x.Payment.Amount)
+            })
+            .ToListAsync();
+
+        var dictPaid = paidByInvoice.ToDictionary(x => x.InvoiceId, x => x.Paid);
+
+        var rows = invoices
+            .Select(i =>
+            {
+                var paid = dictPaid.TryGetValue(i.Id, out var p) ? p : 0m;
+                var remaining = Math.Max(0m, i.TotalAmount - paid);
+
+                return new
+                {
+                    i.Id,
+                    i.InvoiceNumber,
+                    i.CaseFileId,
+                    i.IssueDate,
+                    i.Currency,
+                    Status = i.Status.ToString(),
+                    Total = i.TotalAmount,
+                    Paid = paid,
+                    Remaining = remaining
+                };
+            })
+            .Where(x => x.Remaining > 0)
+            .OrderByDescending(x => x.Remaining)
+            .ToList();
+
+        // QuestPDF license (wymagane)
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        var pdfBytes = QuestPDF.Fluent.Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(20);
+                page.DefaultTextStyle(x => x.FontSize(11));
+
+                page.Header().Column(col =>
+                {
+                    col.Item().Text("Victoria - Outstanding Invoices").FontSize(18).SemiBold();
+                    col.Item().Text($"Generated: {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC").FontSize(10).FontColor(Colors.Grey.Darken1);
+                });
+
+                page.Content().PaddingTop(10).Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(45);   // Id
+                        columns.RelativeColumn(2);    // InvoiceNumber
+                        columns.ConstantColumn(65);   // CaseFileId
+                        columns.ConstantColumn(75);   // IssueDate
+                        columns.ConstantColumn(45);   // Curr
+                        columns.RelativeColumn(1);    // Status
+                        columns.ConstantColumn(70);   // Total
+                        columns.ConstantColumn(70);   // Paid
+                        columns.ConstantColumn(85);   // Remaining
+                    });
+
+                    table.Header(header =>
+                    {
+                        header.Cell().Element(HeaderCell).Text("Id");
+                        header.Cell().Element(HeaderCell).Text("Number");
+                        header.Cell().Element(HeaderCell).Text("Case");
+                        header.Cell().Element(HeaderCell).Text("Date");
+                        header.Cell().Element(HeaderCell).Text("Cur");
+                        header.Cell().Element(HeaderCell).Text("Status");
+                        header.Cell().Element(HeaderCell).AlignRight().Text("Total");
+                        header.Cell().Element(HeaderCell).AlignRight().Text("Paid");
+                        header.Cell().Element(HeaderCell).AlignRight().Text("Remaining");
+
+                        static IContainer HeaderCell(IContainer c) =>
+                            c.PaddingVertical(4).PaddingHorizontal(2)
+                             .Background(Colors.Grey.Lighten3)
+                             .BorderBottom(1).BorderColor(Colors.Grey.Darken1)
+                             .DefaultTextStyle(x => x.SemiBold().FontSize(10));
+                    });
+
+                    foreach (var r in rows)
+                    {
+                        table.Cell().Element(Cell).Text(r.Id.ToString());
+                        table.Cell().Element(Cell).Text(r.InvoiceNumber);
+                        table.Cell().Element(Cell).Text(r.CaseFileId.ToString());
+                        table.Cell().Element(Cell).Text(r.IssueDate.ToString("yyyy-MM-dd"));
+                        table.Cell().Element(Cell).Text(r.Currency);
+                        table.Cell().Element(Cell).Text(r.Status);
+                        table.Cell().Element(Cell).AlignRight().Text(r.Total.ToString("0.00"));
+                        table.Cell().Element(Cell).AlignRight().Text(r.Paid.ToString("0.00"));
+                        table.Cell().Element(Cell).AlignRight().Text(r.Remaining.ToString("0.00"));
+                    }
+
+                    static IContainer Cell(IContainer c) =>
+                        c.PaddingVertical(3).PaddingHorizontal(2)
+                         .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
+                         .DefaultTextStyle(x => x.FontSize(10));
+                });
+
+                page.Footer().AlignRight().Text(t =>
+                {
+                    t.Span("Page ");
+                    t.CurrentPageNumber();
+                    t.Span(" / ");
+                    t.TotalPages();
+                });
+            });
+        }).GeneratePdf();
+
+        var fileName = $"outstanding_invoices_{DateTime.UtcNow:yyyyMMdd_HHmm}.pdf";
+        return File(pdfBytes, "application/pdf", fileName);
+    }
+
+    // =========================================
+    // REVENUE MONTHLY -> PDF EXPORT
+    // GET: api/reports/revenue/monthly/pdf
+    // =========================================
+    [HttpGet("revenue/monthly/pdf")]
+    public async Task<IActionResult> ExportRevenueMonthlyToPdf()
+    {
+        var rows = await _dbContext.Payments
+            .Where(p => p.Status == Domain.Enums.PaymentStatus.Paid)
+            .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+            .Select(g => new
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                TotalRevenue = g.Sum(x => x.Amount)
+            })
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
+            .ToListAsync();
+
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        var pdfBytes = QuestPDF.Fluent.Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(20);
+                page.DefaultTextStyle(x => x.FontSize(11));
+
+                page.Header().Column(col =>
+                {
+                    col.Item().Text("Victoria - Revenue per Month").FontSize(18).SemiBold();
+                    col.Item().Text($"Generated: {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC").FontSize(10).FontColor(Colors.Grey.Darken1);
+                });
+
+                page.Content().PaddingTop(10).Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(70);   // Year
+                        columns.ConstantColumn(70);   // Month
+                        columns.RelativeColumn();     // Total
+                    });
+
+                    table.Header(header =>
+                    {
+                        header.Cell().Element(HeaderCell).Text("Year");
+                        header.Cell().Element(HeaderCell).Text("Month");
+                        header.Cell().Element(HeaderCell).AlignRight().Text("Total revenue");
+
+                        static IContainer HeaderCell(IContainer c) =>
+                            c.PaddingVertical(4).PaddingHorizontal(2)
+                             .Background(Colors.Grey.Lighten3)
+                             .BorderBottom(1).BorderColor(Colors.Grey.Darken1)
+                             .DefaultTextStyle(x => x.SemiBold().FontSize(10));
+                    });
+
+                    foreach (var r in rows)
+                    {
+                        table.Cell().Element(Cell).Text(r.Year.ToString());
+                        table.Cell().Element(Cell).Text(r.Month.ToString("D2"));
+                        table.Cell().Element(Cell).AlignRight().Text(r.TotalRevenue.ToString("0.00"));
+                    }
+
+                    static IContainer Cell(IContainer c) =>
+                        c.PaddingVertical(3).PaddingHorizontal(2)
+                         .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
+                         .DefaultTextStyle(x => x.FontSize(10));
+                });
+
+                page.Footer().AlignRight().Text(t =>
+                {
+                    t.Span("Page ");
+                    t.CurrentPageNumber();
+                    t.Span(" / ");
+                    t.TotalPages();
+                });
+            });
+        }).GeneratePdf();
+
+        var fileName = $"revenue_monthly_{DateTime.UtcNow:yyyyMMdd_HHmm}.pdf";
+        return File(pdfBytes, "application/pdf", fileName);
     }
 
 }
