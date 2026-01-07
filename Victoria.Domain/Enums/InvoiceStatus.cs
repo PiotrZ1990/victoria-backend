@@ -5,6 +5,7 @@
         Issued = 1,
         Paid,
         Overdue,
-        Cancelled
+        Cancelled,
+        PartiallyPaid,
     }
 }
