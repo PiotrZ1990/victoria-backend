@@ -1,0 +1,51 @@
+﻿@model List<Victoria.Web.Models.Visa.VisaApplicationListViewModel>
+@{
+    ViewData["Title"] = "Visa Applications";
+    var caseFileId = (int)ViewBag.CaseFileId;
+}
+
+<h2 class="mb-3">Visa Applications (CaseFile #@caseFileId)</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="mb-3">
+    <a class="btn btn-primary" href="/VisaApplications/Create?caseFileId=@caseFileId">+ New Visa Application</a>
+    <a class="btn btn-secondary" href="/CaseFiles/Details/@caseFileId">← Back to Case</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Country</th>
+            <th>VisaType</th>
+            <th>Status</th>
+            <th>Appointment</th>
+            <th>Decision</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.Id</td>
+                <td>@x.Country</td>
+                <td>@x.VisaType</td>
+                <td>@x.Status</td>
+                <td>@(x.AppointmentDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>@(x.DecisionDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary" href="/VisaApplications/Details/@x.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

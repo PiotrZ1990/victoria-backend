@@ -1,0 +1,44 @@
+﻿@model Victoria.Web.Models.Visa.VisaApplicationDetailsViewModel
+@{
+    ViewData["Title"] = "Visa Application Details";
+}
+
+<h2 class="mb-3">Visa Application Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>CaseFileId:</strong> @Model.CaseFileId</p>
+        <p><strong>Country:</strong> @Model.Country</p>
+        <p><strong>VisaType:</strong> @Model.VisaType</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>Appointment:</strong> @(Model.AppointmentDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p><strong>Decision:</strong> @(Model.DecisionDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+
+        <div class="mt-3 d-flex gap-2">
+            <a class="btn btn-warning" href="/VisaApplications/Edit/@Model.Id?caseFileId=@Model.CaseFileId">Edit</a>
+
+            <form asp-action="Delete" method="post" style="display:inline;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="caseFileId" value="@Model.CaseFileId" />
+                <button class="btn btn-danger" type="submit"
+                        onclick="return confirm('Delete this visa application?');">
+                    Delete
+                </button>
+            </form>
+
+            <a class="btn btn-secondary" href="/VisaApplications?caseFileId=@Model.CaseFileId">← Back</a>
+        </div>
+    </div>
+</div>
