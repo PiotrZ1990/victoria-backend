@@ -1,0 +1,50 @@
+﻿@model List<Victoria.Web.Models.Applications.StudyApplicationListViewModel>
+
+@{
+    ViewData["Title"] = "Study Applications";
+    var caseFileId = (int)(ViewBag.CaseFileId ?? 0);
+}
+
+<h2 class="mb-3">Study Applications</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="mb-3">
+    <a class="btn btn-success" href="/StudyApplications/Create?caseFileId=@caseFileId">+ Add application</a>
+    <a class="btn btn-secondary" href="/CaseFiles/Details/@caseFileId">← Back to case</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Country</th>
+            <th>University</th>
+            <th>Program</th>
+            <th>Status</th>
+            <th style="width:260px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.Id</td>
+                <td>@x.Country</td>
+                <td>@x.UniversityName</td>
+                <td>@x.ProgramName</td>
+                <td>@x.Status</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="/StudyApplications/Details/@x.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

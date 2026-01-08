@@ -1,0 +1,49 @@
+﻿@model Victoria.Web.Models.Applications.StudyApplicationDetailsViewModel
+@{
+    ViewData["Title"] = "Study Application Details";
+}
+
+<h2 class="mb-3">Study Application Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>CaseFileId:</strong> @Model.CaseFileId</p>
+        <p><strong>Country:</strong> @Model.Country</p>
+        <p><strong>University:</strong> @Model.UniversityName</p>
+        <p><strong>Program:</strong> @Model.ProgramName</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>SubmittedAt:</strong> @(Model.SubmittedAt?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p><strong>CreatedAt:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+
+        <div class="mt-3 d-flex gap-2">
+            <a class="btn btn-secondary"
+               href="/StudyApplications?caseFileId=@Model.CaseFileId">
+                ← Back
+            </a>
+
+            <a class="btn btn-primary"
+               href="/StudyApplications/Edit/@Model.Id">
+                Edit
+            </a>
+
+            <form method="post"
+                  action="/StudyApplications/Delete/@Model.Id"
+                  onsubmit="return confirm('Na pewno usunąć tę aplikację?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
