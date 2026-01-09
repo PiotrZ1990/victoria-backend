@@ -1,0 +1,91 @@
+﻿@model Victoria.Web.Models.Reports.ReportsDashboardViewModel
+@{
+    ViewData["Title"] = "Reports - Dashboard";
+}
+
+<h2 class="mb-3">Reports - Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Lead conversion</strong></div>
+            <div class="card-body">
+                @if (Model.LeadConversion == null)
+                {
+                    <p>No data.</p>
+                }
+                else
+                {
+                    <p><strong>Total leads:</strong> @Model.LeadConversion.TotalLeads</p>
+                    <p><strong>Converted:</strong> @Model.LeadConversion.ConvertedLeads</p>
+                    <p><strong>Rate:</strong> @Model.LeadConversion.ConversionRate %</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Outstanding invoices</strong></div>
+            <div class="card-body">
+                <p><strong>Count:</strong> @Model.OutstandingCount</p>
+                <p><strong>Total outstanding:</strong> @Model.TotalOutstanding</p>
+
+                <a class="btn btn-sm btn-outline-primary" href="/Reports/Invoices">Open invoices report</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Exports</strong></div>
+            <div class="card-body">
+                <a class="btn btn-sm btn-success" href="/Reports/OutstandingInvoicesExcel">Outstanding (Excel)</a>
+                <a class="btn btn-sm btn-danger ms-2" href="/Reports/OutstandingInvoicesPdf">Outstanding (PDF)</a>
+                <hr />
+                <a class="btn btn-sm btn-success" href="/Reports/RevenueMonthlyExcel">Revenue monthly (Excel)</a>
+                <a class="btn btn-sm btn-danger ms-2" href="/Reports/RevenueMonthlyPdf">Revenue monthly (PDF)</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><strong>Top outstanding invoices</strong></div>
+    <div class="card-body">
+        @if (Model.TopOutstanding == null || !Model.TopOutstanding.Any())
+        {
+            <p>No outstanding invoices.</p>
+        }
+        else
+        {
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Case</th>
+                        <th>IssueDate</th>
+                        <th>Status</th>
+                        <th>Remaining</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model.TopOutstanding)
+                    {
+                        <tr>
+                            <td>@x.InvoiceNumber</td>
+                            <td>@x.CaseFileId</td>
+                            <td>@x.IssueDate.ToString("yyyy-MM-dd")</td>
+                            <td>@x.Status</td>
+                            <td>@x.RemainingAmount @x.Currency</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Invoices/Details/@x.InvoiceId">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

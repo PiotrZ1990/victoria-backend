@@ -1,0 +1,66 @@
+﻿@model Victoria.Web.Models.Reports.ReportsPaymentsViewModel
+@{
+    ViewData["Title"] = "Reports - Payments";
+}
+
+<h2 class="mb-3">Reports - Payments</h2>
+
+<div class="mb-3">
+    <a class="btn btn-sm btn-success" href="/Reports/RevenueMonthlyExcel">Revenue monthly (Excel)</a>
+    <a class="btn btn-sm btn-danger ms-2" href="/Reports/RevenueMonthlyPdf">Revenue monthly (PDF)</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><strong>Revenue monthly</strong></div>
+    <div class="card-body">
+        @if (Model.RevenueMonthly == null || !Model.RevenueMonthly.Any())
+        {
+            <p>No data.</p>
+        }
+        else
+        {
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr><th>Year</th><th>Month</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.RevenueMonthly)
+                    {
+                        <tr>
+                            <td>@r.Year</td>
+                            <td>@r.Month.ToString("D2")</td>
+                            <td>@r.TotalRevenue</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><strong>Payments by service</strong></div>
+    <div class="card-body">
+        @if (Model.ByService == null || !Model.ByService.Any())
+        {
+            <p>No data.</p>
+        }
+        else
+        {
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr><th>Service</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model.ByService)
+                    {
+                        <tr>
+                            <td>@x.ServiceType</td>
+                            <td>@x.TotalAmount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
