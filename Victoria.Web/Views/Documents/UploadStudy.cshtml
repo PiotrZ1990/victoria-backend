@@ -1,0 +1,36 @@
+﻿@model Victoria.Web.Models.Documents.DocumentUploadStudyViewModel
+@{
+    ViewData["Title"] = "Upload document (Study Application)";
+}
+
+<h2 class="mb-3">Upload document (Study Application)</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="UploadStudy" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="StudyApplicationId" />
+
+    <div class="mb-3">
+        <label class="form-label">Title (DocumentType)</label>
+        <input class="form-control" asp-for="Title" />
+        <span class="text-danger" asp-validation-for="Title"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description (optional)</label>
+        <input class="form-control" asp-for="Description" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">File</label>
+        <input class="form-control" asp-for="File" type="file" />
+        <span class="text-danger" asp-validation-for="File"></span>
+    </div>
+
+    <button class="btn btn-success" type="submit">Upload</button>
+</form>

@@ -1,0 +1,60 @@
+﻿@model Victoria.Web.Models.Documents.DocumentDetailsViewModel
+@{
+    ViewData["Title"] = "Document details";
+}
+
+<h2 class="mb-3">Document details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Type:</strong> @Model.DocumentType</p>
+        @{
+            var statusText = Model.Status switch
+            {
+                1 => "Uploaded",
+                2 => "Approved",
+                3 => "Rejected",
+                _ => Model.Status.ToString()
+            };
+        }
+
+        <p><strong>Status:</strong> @statusText</p>
+
+        <p><strong>Description:</strong> @(Model.Description ?? "-")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <hr />
+
+        <p><strong>File:</strong> @Model.File.FileName</p>
+        <p><strong>Path:</strong> @Model.File.FilePath</p>
+        <p><strong>Size:</strong> @Model.File.FileSize</p>
+
+        <form asp-action="Approve" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-success">Approve</button>
+        </form>
+
+        <form asp-action="Reject" method="post" class="mt-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="mb-2">
+                <label class="form-label">Reject reason</label>
+                <input class="form-control" name="reason" />
+            </div>
+
+            <button class="btn btn-danger">Reject</button>
+        </form>
+    </div>
+</div>

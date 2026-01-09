@@ -297,6 +297,7 @@ public class DocumentsController : ControllerBase
             Status = doc.Status.ToString()
         });
     }
+
     [HttpPost("attach-to-application")]
     public async Task<IActionResult> AttachToApplication([FromBody] AttachDocumentDto dto)
     {
@@ -321,6 +322,88 @@ public class DocumentsController : ControllerBase
         }
 
         return Ok(new { message = "Attached", dto.DocumentId, dto.StudyApplicationId });
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var docs = await _db.Documents
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new
+            {
+                x.Id,
+                x.DocumentType,
+                x.Status,
+                x.CreatedAt,
+                x.FileResourceId
+            })
+            .ToListAsync();
+
+        return Ok(docs);
+    }
+
+    // =========================================
+    // LIST DOCUMENTS FOR STUDY APPLICATION
+    // GET: api/documents/studyapplication/{studyApplicationId}
+    // =========================================
+    [HttpGet("studyapplication/{studyApplicationId:int}")]
+    public async Task<IActionResult> GetForStudyApplication(int studyApplicationId)
+    {
+        var exists = await _db.StudyApplications.AnyAsync(x => x.Id == studyApplicationId);
+        if (!exists) return NotFound("StudyApplication not found");
+
+        var docs = await _db.ApplicationDocuments
+            .Where(x => x.StudyApplicationId == studyApplicationId)
+            .Include(x => x.Document)
+                .ThenInclude(d => d.FileResource)
+            .OrderByDescending(x => x.Document.CreatedAt)
+            .Select(x => new
+            {
+                x.Document.Id,
+                x.Document.DocumentType,
+                x.Document.Description,
+                Status = x.Document.Status.ToString(),
+                x.Document.CreatedAt,
+                File = new
+                {
+                    x.Document.FileResourceId,
+                    x.Document.FileResource.FileName,
+                    x.Document.FileResource.ContentType,
+                    x.Document.FileResource.FileSize,
+                    x.Document.FileResource.FilePath
+                }
+            })
+            .ToListAsync();
+
+        return Ok(docs);
+    }
+
+    [HttpGet("visaapplication/{visaApplicationId:int}")]
+    public async Task<IActionResult> GetByVisaApplication(int visaApplicationId)
+    {
+        var docs = await _db.VisaDocuments
+            .Where(x => x.VisaApplicationId == visaApplicationId)
+            .Include(x => x.Document)
+                .ThenInclude(d => d.FileResource)
+            .OrderByDescending(x => x.Document.CreatedAt)
+            .Select(x => new
+            {
+                x.Document.Id,
+                DocumentType = x.Document.DocumentType,
+                x.Document.Description,
+                Status = x.Document.Status.ToString(),
+                x.Document.CreatedAt,
+                File = new
+                {
+                    x.Document.FileResourceId,
+                    x.Document.FileResource.FileName,
+                    x.Document.FileResource.ContentType,
+                    x.Document.FileResource.FileSize,
+                    x.Document.FileResource.FilePath
+                }
+            })
+            .ToListAsync();
+
+        return Ok(docs);
     }
 
 
