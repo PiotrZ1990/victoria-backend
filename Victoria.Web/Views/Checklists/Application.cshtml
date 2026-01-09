@@ -1,0 +1,35 @@
+﻿@model List<Victoria.Web.Models.Documents.ChecklistItemViewModel>
+
+<h2>Application Checklist</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Document</th>
+            <th>Required</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DocumentType</td>
+                <td>@(item.IsRequired ? "Yes" : "No")</td>
+                <td>
+                    @if (item.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Pending</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-secondary" href="/CaseFiles/Details/@ViewBag.CaseFileId">← Back to Case</a>

@@ -7,6 +7,7 @@ public class CaseFileViewModel
     public string CaseNumber { get; set; }
 
     // Lead
+    public int LeadId { get; set; }
     public string LeadFullName { get; set; }
     public string LeadEmail { get; set; }
 

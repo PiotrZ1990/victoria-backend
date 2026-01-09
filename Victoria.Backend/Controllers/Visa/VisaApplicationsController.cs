@@ -10,8 +10,7 @@ namespace Victoria.Backend.Controllers.Visa;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
-//[Authorize(Roles = "Staff,Admin")]
+[Authorize(Roles = "Staff,Admin")]
 public class VisaApplicationsController : ControllerBase
 {
     private readonly AppDbContext _db;
