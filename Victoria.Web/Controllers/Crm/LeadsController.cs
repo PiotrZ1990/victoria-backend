@@ -68,6 +68,70 @@ public class LeadsController : Controller
     }
 
     // =========================================
+    // DETAILS
+    // GET: /Leads/Details/5
+    // =========================================
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        try
+        {
+            var client = CreateApiClientWithJwt();
+
+            var response = await client.GetAsync($"api/leads/{id}");
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return RedirectToAction("Login", "Auth");
+
+            if (!response.IsSuccessStatusCode)
+                return NotFound();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var lead = JsonSerializer.Deserialize<LeadViewModel>(json, JsonOptions);
+
+            if (lead == null)
+                return NotFound();
+
+            return View(lead);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+    }
+
+    // =========================================
+    // DELETE
+    // POST: /Leads/Delete/5
+    // =========================================
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            var client = CreateApiClientWithJwt();
+
+            var response = await client.DeleteAsync($"api/leads/{id}");
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return RedirectToAction("Login", "Auth");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = $"Delete failed: {(int)response.StatusCode} {response.ReasonPhrase}";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Success"] = "Lead deleted.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+    }
+
+
+    // =========================================
     // CREATE (FORM)
     // GET: /Leads/Create
     // =========================================

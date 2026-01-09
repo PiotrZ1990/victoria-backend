@@ -68,6 +68,12 @@
                     </td>
                     <td>@lead.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                     <td>
+                        <a asp-action="Details"
+                           asp-route-id="@lead.Id"
+                           class="btn btn-sm btn-primary me-1">
+                            Details
+                        </a>
+
                         <a asp-action="Edit"
                            asp-route-id="@lead.Id"
                            class="btn btn-sm btn-warning">

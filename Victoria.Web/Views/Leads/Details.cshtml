@@ -1,0 +1,49 @@
+﻿@model Victoria.Web.Models.Crm.LeadViewModel
+@{
+    ViewData["Title"] = "Lead Details";
+}
+
+<h2 class="mb-3">Lead Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>FullName:</strong> @Model.FullName</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone:</strong> @Model.PhoneNumber</p>
+        <p><strong>Source:</strong> @Model.Source</p>
+        <p><strong>InterestedCountry:</strong> @Model.InterestedCountry</p>
+        <p><strong>InterestedService:</strong> @Model.InterestedService</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>CreatedAt:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+
+        <a class="btn btn-secondary" href="/Leads">← Back</a>
+        <a class="btn btn-warning ms-2" href="/Leads/Edit/@Model.Id">Edit</a>
+
+        <form method="post" asp-action="Delete" class="d-inline ms-2"
+              onsubmit="return confirm('Delete this lead?');">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+
+        @if (Model.Status != "Converted")
+        {
+            <form method="post" asp-action="ConvertToCaseFile" class="d-inline ms-2"
+                  onsubmit="return confirm('Convert this lead to CaseFile?');">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button class="btn btn-success">Convert → CaseFile</button>
+            </form>
+        }
+    </div>
+</div>
