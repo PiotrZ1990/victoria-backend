@@ -1,0 +1,43 @@
+﻿@model Victoria.Web.Models.Cms.TestimonialCreateViewModel
+@{
+    ViewData["Title"] = "Create Testimonial";
+}
+
+<h2 class="mb-3">Create Testimonial</h2>
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Author name</label>
+        <input class="form-control" name="AuthorName" value="@Model?.AuthorName" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Author title</label>
+        <input class="form-control" name="AuthorTitle" value="@Model?.AuthorTitle" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Country</label>
+        <input class="form-control" name="Country" value="@Model?.Country" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea class="form-control" name="Content" rows="6">@Model?.Content</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rating (1-5)</label>
+        <input class="form-control" type="number" name="Rating" min="1" max="5" value="@Model.Rating" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="IsPublished" value="true" />
+        <label class="form-check-label">Published</label>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/Testimonials">Cancel</a>
+</form>

@@ -1,0 +1,39 @@
+﻿@model Victoria.Web.Models.Cms.TestimonialDetailsViewModel
+@{
+    ViewData["Title"] = "Testimonial Details";
+}
+
+<h2 class="mb-3">Testimonial Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Author:</strong> @Model.AuthorName</p>
+        <p><strong>Title:</strong> @(Model.AuthorTitle ?? "-")</p>
+        <p><strong>Country:</strong> @(Model.Country ?? "-")</p>
+        <p><strong>Rating:</strong> @Model.Rating</p>
+        <p><strong>Published:</strong> @(Model.IsPublished ? "Yes" : "No")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <hr />
+        <p>@Model.Content</p>
+
+        <hr />
+        <a class="btn btn-secondary" href="/Testimonials">← Back</a>
+        <a class="btn btn-warning ms-2" href="/Testimonials/Edit/@Model.Id">Edit</a>
+
+        <form method="post" action="/Testimonials/Delete/@Model.Id" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-danger ms-2" onclick="return confirm('Delete?');">Delete</button>
+        </form>
+    </div>
+</div>
