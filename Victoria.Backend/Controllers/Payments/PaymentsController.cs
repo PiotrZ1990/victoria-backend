@@ -108,6 +108,60 @@ public class PaymentsController : ControllerBase
     }
 
     // =========================================
+    // GET ALL PAYMENTS
+    // GET: api/payments
+    // =========================================
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var payments = await _dbContext.Payments
+            .OrderByDescending(x => x.PaymentDate)
+            .Select(p => new PaymentGetDto
+            {
+                Id = p.Id,
+                CaseFileId = p.CaseFileId,
+                InvoiceId = 0, // nie znamy tu invoiceId bez joinu (opcjonalnie ogarniemy później)
+                Amount = p.Amount,
+                Currency = p.Currency,
+                PaymentMethod = p.PaymentMethod.ToString(),
+                ServiceType = p.ServiceType.ToString(),
+                Status = p.Status.ToString(),
+                PaymentDate = p.PaymentDate
+            })
+            .ToListAsync();
+
+        return Ok(payments);
+    }
+
+    // =========================================
+    // GET PAYMENTS FOR CASEFILE
+    // GET: api/payments/casefile/{caseFileId}
+    // =========================================
+    [HttpGet("casefile/{caseFileId:int}")]
+    public async Task<IActionResult> GetByCaseFile(int caseFileId)
+    {
+        var payments = await _dbContext.Payments
+            .Where(x => x.CaseFileId == caseFileId)
+            .OrderByDescending(x => x.PaymentDate)
+            .Select(p => new PaymentGetDto
+            {
+                Id = p.Id,
+                CaseFileId = p.CaseFileId,
+                InvoiceId = 0,
+                Amount = p.Amount,
+                Currency = p.Currency,
+                PaymentMethod = p.PaymentMethod.ToString(),
+                ServiceType = p.ServiceType.ToString(),
+                Status = p.Status.ToString(),
+                PaymentDate = p.PaymentDate
+            })
+            .ToListAsync();
+
+        return Ok(payments);
+    }
+
+
+    // =========================================
     // PRIVATE MAPPER
     // =========================================
     private static PaymentGetDto MapToGetDto(Payment payment, int invoiceId)
