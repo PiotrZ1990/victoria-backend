@@ -9,6 +9,7 @@ using Victoria.Domain.Entities.Documents;
 using Victoria.Domain.Entities.Education;
 using Victoria.Domain.Entities.Files;
 using Victoria.Domain.Entities.Payments;
+using Victoria.Domain.Entities.Staff;
 using Victoria.Domain.Entities.Visa;
 
 namespace Victoria.Infrastructure.Data
@@ -61,6 +62,7 @@ namespace Victoria.Infrastructure.Data
         public DbSet<CaseVisaChecklistItem> CaseVisaChecklistItems => Set<CaseVisaChecklistItem>();
         public DbSet<AccommodationDocumentChecklist> AccommodationDocumentChecklists => Set<AccommodationDocumentChecklist>();
         public DbSet<CaseAccommodationChecklistItem> CaseAccommodationChecklistItems => Set<CaseAccommodationChecklistItem>();
+        public DbSet<Employee> Employees => Set<Employee>();
 
 
 
@@ -375,6 +377,16 @@ namespace Victoria.Infrastructure.Data
             modelBuilder.Entity<CaseAccommodationChecklistItem>()
                 .HasIndex(x => new { x.CaseFileId, x.ChecklistId })
                 .IsUnique();
+
+            modelBuilder.Entity<Employee>(e =>
+            {
+                e.Property(x => x.FullName).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Email).HasMaxLength(200).IsRequired();
+                e.Property(x => x.PhoneNumber).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Position).HasMaxLength(100).IsRequired();
+
+                e.HasIndex(x => x.Email).IsUnique();
+            });
 
 
             // =========================

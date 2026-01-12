@@ -1,0 +1,42 @@
+﻿@model List<Victoria.Web.Models.Staff.EmployeeViewModel>
+
+<h2 class="mb-3">Employees</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<a class="btn btn-primary mb-3" asp-action="Create">+ Add employee</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Full name</th>
+            <th>Email</th>
+            <th>Position</th>
+            <th>Active</th>
+            <th style="width:220px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.Id</td>
+                <td>@e.FullName</td>
+                <td>@e.Email</td>
+                <td>@e.Position</td>
+                <td>@(e.IsActive ? "Yes" : "No")</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@e.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

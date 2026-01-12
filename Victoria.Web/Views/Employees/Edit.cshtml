@@ -1,0 +1,40 @@
+﻿@model Victoria.Web.Models.Staff.EmployeeEditViewModel
+
+<h2 class="mb-3">Edit Employee</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Full name</label>
+        <input class="form-control" asp-for="FullName" />
+        <span class="text-danger" asp-validation-for="FullName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" asp-for="Email" />
+        <span class="text-danger" asp-validation-for="Email"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input class="form-control" asp-for="PhoneNumber" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Position</label>
+        <input class="form-control" asp-for="Position" />
+        <span class="text-danger" asp-validation-for="Position"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsActive" />
+        <label class="form-check-label">Active</label>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary ms-2" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+</form>
