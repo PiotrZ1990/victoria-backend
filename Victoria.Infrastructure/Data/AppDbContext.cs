@@ -54,7 +54,7 @@ namespace Victoria.Infrastructure.Data
         public DbSet<ExamResult> ExamResults { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<PageSection> PageSections { get; set; }
-        public DbSet<NewsPost> NewsPosts { get; set; }
+        public DbSet<NewsPost> NewsPosts => Set<NewsPost>();
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Expert> Experts { get; set; }
         public DbSet<Setting> Settings { get; set; }

@@ -1,0 +1,41 @@
+﻿@model NewsPostEditViewModel
+@{
+    ViewData["Title"] = "Edit News Post";
+}
+
+<h2>Edit News Post</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input class="form-control" asp-for="Title" />
+        <span class="text-danger" asp-validation-for="Title"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea class="form-control" asp-for="Content" rows="8"></textarea>
+        <span class="text-danger" asp-validation-for="Content"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsPublished" />
+        <label class="form-check-label">Published</label>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Update</button>
+    <a class="btn btn-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
