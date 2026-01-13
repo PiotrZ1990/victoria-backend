@@ -30,7 +30,7 @@ namespace Victoria.Infrastructure.Data
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Domain.Entities.Cms.Teacher> Teachers { get; set; }
         public DbSet<Consultation> Consultations { get; set; }
         public DbSet<Lead> Leads { get; set; }
         public DbSet<CaseFile> CaseFiles { get; set; }
@@ -53,9 +53,11 @@ namespace Victoria.Infrastructure.Data
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamSession> ExamSessions { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
-        public DbSet<Page> Pages { get; set; }
-        public DbSet<PageSection> PageSections { get; set; }
-        public DbSet<NewsPost> NewsPosts => Set<NewsPost>();
+        public DbSet<Victoria.Domain.Entities.Cms.Page> Pages => Set<Victoria.Domain.Entities.Cms.Page>();
+
+
+        public DbSet<Domain.Entities.CMS.PageSection> PageSections { get; set; }
+        public DbSet<Domain.Entities.CMS.NewsPost> NewsPosts => Set<NewsPost>();
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Expert> Experts { get; set; }
         public DbSet<Setting> Settings { get; set; }

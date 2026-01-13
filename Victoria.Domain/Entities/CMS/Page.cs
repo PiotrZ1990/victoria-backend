@@ -1,14 +1,13 @@
-﻿namespace Victoria.Domain.Entities.CMS
+﻿namespace Victoria.Domain.Entities.Cms;
+
+public class Page
 {
-    public class Page
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Slug { get; set; }        // np. about-us, services
-        public string Title { get; set; }
+    public string Title { get; set; } = default!;
+    public string Slug { get; set; } = default!;   // np. "about", "contact"
+    public bool IsPublished { get; set; }
 
-        public bool IsPublished { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

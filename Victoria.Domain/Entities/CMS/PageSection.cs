@@ -1,4 +1,6 @@
-﻿namespace Victoria.Domain.Entities.CMS
+﻿using Victoria.Domain.Entities.Cms;
+
+namespace Victoria.Domain.Entities.CMS
 {
     public class PageSection
     {
