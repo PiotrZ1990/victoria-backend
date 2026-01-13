@@ -1,17 +1,17 @@
-﻿using Victoria.Domain.Entities.Cms;
+﻿namespace Victoria.Domain.Entities.Cms;
 
-namespace Victoria.Domain.Entities.CMS
+public class PageSection
 {
-    public class PageSection
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public int PageId { get; set; }
-        public Page Page { get; set; }
+    public int PageId { get; set; }
+    public Page Page { get; set; } = default!;
 
-        public string SectionType { get; set; }   // Hero, Text, Image, CTA
-        public string Content { get; set; }       // HTML / tekst
+    public string SectionKey { get; set; } = default!; // np. "hero", "about", "cta"
+    public string? Title { get; set; }
+    public string? Content { get; set; }
 
-        public int Order { get; set; }
-    }
+    public int Order { get; set; } = 1;
+
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

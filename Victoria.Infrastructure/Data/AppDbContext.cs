@@ -54,9 +54,7 @@ namespace Victoria.Infrastructure.Data
         public DbSet<ExamSession> ExamSessions { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
         public DbSet<Victoria.Domain.Entities.Cms.Page> Pages => Set<Victoria.Domain.Entities.Cms.Page>();
-
-
-        public DbSet<Domain.Entities.CMS.PageSection> PageSections { get; set; }
+        public DbSet<PageSection> PageSections { get; set; }
         public DbSet<Domain.Entities.CMS.NewsPost> NewsPosts => Set<NewsPost>();
         public DbSet<Testimonial> Testimonials { get; set; }
         public DbSet<Expert> Experts { get; set; }
@@ -400,9 +398,10 @@ namespace Victoria.Infrastructure.Data
                 .IsUnique();
 
             modelBuilder.Entity<PageSection>()
-                .HasOne(x => x.Page)
-                .WithMany()
-                .HasForeignKey(x => x.PageId);
+                 .HasOne(x => x.Page)
+                 .WithMany(p => p.Sections)
+                 .HasForeignKey(x => x.PageId);
+
 
             modelBuilder.Entity<Setting>()
                 .HasIndex(x => x.Key)

@@ -1,0 +1,35 @@
+﻿@model Victoria.Web.Models.Cms.PageSectionEditViewModel
+@{
+    ViewData["Title"] = "Edit Section";
+}
+
+<h2 class="mb-3">Edit Section</h2>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="PageId" value="@Model.PageId" />
+
+    <div class="mb-3">
+        <label class="form-label">Order</label>
+        <input class="form-control" type="number" name="Order" value="@Model.Order" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Section Key</label>
+        <input class="form-control" name="SectionKey" value="@Model.SectionKey" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input class="form-control" name="Title" value="@Model.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea class="form-control" name="Content" rows="8">@Model.Content</textarea>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/PageSections/Details/@Model.Id">Cancel</a>
+</form>
