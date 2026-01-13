@@ -1,0 +1,70 @@
+﻿@model Victoria.Web.Models.Cms.TeacherEditViewModel
+@{
+    ViewData["Title"] = "Edit Teacher";
+}
+
+<h2 class="mb-3">Edit Teacher</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Full name</label>
+        <input class="form-control" asp-for="FullName" />
+        <span class="text-danger" asp-validation-for="FullName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input class="form-control" asp-for="Title" />
+        <span class="text-danger" asp-validation-for="Title"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" asp-for="Email" />
+        <span class="text-danger" asp-validation-for="Email"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input class="form-control" asp-for="Phone" />
+        <span class="text-danger" asp-validation-for="Phone"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Current photo URL</label>
+        <input class="form-control" asp-for="PhotoUrl" readonly />
+        <small class="text-muted">To change photo, upload a new file below.</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload new photo (from disk)</label>
+        <input class="form-control" type="file" asp-for="PhotoFile" />
+        <span class="text-danger" asp-validation-for="PhotoFile"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Bio</label>
+        <textarea class="form-control" asp-for="Bio" rows="6"></textarea>
+        <span class="text-danger" asp-validation-for="Bio"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsActive" />
+        <label class="form-check-label" asp-for="IsActive">Active</label>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/Teachers/Details/@Model.Id">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

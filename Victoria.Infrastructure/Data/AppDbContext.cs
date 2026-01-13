@@ -3,6 +3,7 @@ using Victoria.Domain.Entities;
 using Victoria.Domain.Entities.Accommodation;
 using Victoria.Domain.Entities.Applications;
 using Victoria.Domain.Entities.Cases;
+using Victoria.Domain.Entities.Cms;
 using Victoria.Domain.Entities.CMS;
 using Victoria.Domain.Entities.CRM;
 using Victoria.Domain.Entities.Documents;

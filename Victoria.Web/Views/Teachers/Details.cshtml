@@ -1,0 +1,70 @@
+﻿@model Victoria.Web.Models.Cms.TeacherDetailsViewModel
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Teacher Details";
+
+    var apiBase = Configuration["Api:BaseUrl"]?.TrimEnd('/') ?? "";
+    string? photoSrc = null;
+
+    if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+    {
+        if (Model.PhotoUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            photoSrc = Model.PhotoUrl;
+        }
+        else
+        {
+            var path = Model.PhotoUrl.StartsWith("/") ? Model.PhotoUrl : "/" + Model.PhotoUrl;
+            photoSrc = apiBase + path;
+        }
+    }
+}
+
+<h2 class="mb-3">Teacher Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Name:</strong> @Model.FullName</p>
+        <p><strong>Title:</strong> @(Model.Title ?? "-")</p>
+        <p><strong>Email:</strong> @(Model.Email ?? "-")</p>
+        <p><strong>Phone:</strong> @(Model.Phone ?? "-")</p>
+        <p><strong>Active:</strong> @(Model.IsActive ? "Yes" : "No")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        @if (!string.IsNullOrWhiteSpace(photoSrc))
+        {
+            <hr />
+            <img src="@photoSrc" style="max-width:220px;" class="img-thumbnail" />
+            @* <div class="text-muted mt-1" style="font-size: 12px;">
+                @photoSrc
+            </div> *@
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Bio))
+        {
+            <hr />
+            <p>@Model.Bio</p>
+        }
+
+        <hr />
+        <a class="btn btn-secondary" href="/Teachers">← Back</a>
+        <a class="btn btn-warning ms-2" href="/Teachers/Edit/@Model.Id">Edit</a>
+
+        <form method="post" action="/Teachers/Delete/@Model.Id" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-danger ms-2" onclick="return confirm('Delete?');">Delete</button>
+        </form>
+    </div>
+</div>
