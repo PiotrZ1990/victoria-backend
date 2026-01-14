@@ -1,0 +1,48 @@
+﻿@model Victoria.Web.Models.Education.EnrollmentCreateViewModel
+@{
+    ViewData["Title"] = "Create Enrollment";
+}
+
+<h2 class="mb-3">Create Enrollment</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">StudentId</label>
+        <input class="form-control" asp-for="StudentId" />
+        <span class="text-danger" asp-validation-for="StudentId"></span>
+        <small class="text-muted">Weź Id z listy Students.</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">CourseGroupId</label>
+        <input class="form-control" asp-for="CourseGroupId" />
+        <span class="text-danger" asp-validation-for="CourseGroupId"></span>
+        <small class="text-muted">Weź Id z listy CourseGroups.</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" asp-for="Status">
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+        <span class="text-danger" asp-validation-for="Status"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" asp-for="Notes" rows="4"></textarea>
+        <span class="text-danger" asp-validation-for="Notes"></span>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/Enrollments">Cancel</a>
+</form>

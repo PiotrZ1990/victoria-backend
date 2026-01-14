@@ -1,0 +1,35 @@
+﻿@model Victoria.Web.Models.Education.EnrollmentEditViewModel
+@{
+    ViewData["Title"] = "Edit Enrollment";
+}
+
+<h2 class="mb-3">Edit Enrollment</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" asp-for="Status">
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+        <span class="text-danger" asp-validation-for="Status"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" asp-for="Notes" rows="4"></textarea>
+        <span class="text-danger" asp-validation-for="Notes"></span>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/Enrollments/Details/@Model.Id">Cancel</a>
+</form>

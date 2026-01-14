@@ -28,10 +28,7 @@ namespace Victoria.Infrastructure.Data
         {
         }
 
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Domain.Entities.Cms.Teacher> Teachers { get; set; }
-        public DbSet<Consultation> Consultations { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Lead> Leads { get; set; }
         public DbSet<CaseFile> CaseFiles { get; set; }
         public DbSet<StudyApplication> StudyApplications { get; set; }
@@ -50,6 +47,8 @@ namespace Victoria.Infrastructure.Data
         public DbSet<LanguageCourse> LanguageCourses { get; set; }
         public DbSet<CourseGroup> CourseGroups { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<Student> Students { get; set; }
+
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamSession> ExamSessions { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }

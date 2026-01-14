@@ -1,0 +1,37 @@
+﻿@model Victoria.Web.Models.Education.StudentDetailsViewModel
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<h2 class="mb-3">Student Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+        <p><strong>Email:</strong> @(Model.Email ?? "-")</p>
+        <p><strong>Phone:</strong> @(Model.Phone ?? "-")</p>
+        <p><strong>Nationality:</strong> @(Model.Nationality ?? "-")</p>
+        <p><strong>Date of birth:</strong> @(Model.DateOfBirth?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p><strong>Active:</strong> @(Model.IsActive ? "Yes" : "No")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <hr />
+        <a class="btn btn-secondary" href="/Students">← Back</a>
+        <a class="btn btn-warning ms-2" href="/Students/Edit/@Model.Id">Edit</a>
+
+        <form method="post" action="/Students/Delete/@Model.Id" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-danger ms-2" onclick="return confirm('Delete student?');">Delete</button>
+        </form>
+    </div>
+</div>
