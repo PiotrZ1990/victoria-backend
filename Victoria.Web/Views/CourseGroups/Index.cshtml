@@ -1,0 +1,66 @@
+﻿@model List<Victoria.Web.Models.Education.CourseGroupListViewModel>
+@{
+    ViewData["Title"] = "Course Groups";
+}
+
+<h2 class="mb-3">Course Groups</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="mb-3">
+    <a class="btn btn-primary" href="/CourseGroups/Create">+ Add group</a>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Course</th>
+            <th>Group</th>
+            <th>Dates</th>
+            <th>Capacity</th>
+            <th>Active</th>
+            <th style="width:150px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model == null || !Model.Any())
+        {
+            <tr><td colspan="7" class="text-center">No groups.</td></tr>
+        }
+        else
+        {
+            foreach (var x in Model)
+            {
+                <tr>
+                    <td>@x.Id</td>
+                    <td>@x.CourseName</td>
+                    <td>@(x.GroupName ?? "-")</td>
+                    <td>@x.StartDate.ToString("yyyy-MM-dd") - @x.EndDate.ToString("yyyy-MM-dd")</td>
+                    <td>@x.Capacity</td>
+                    <td>
+                        @if (x.IsActive)
+                        {
+                            <span class="badge bg-success">Yes</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-secondary">No</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="/CourseGroups/Details/@x.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

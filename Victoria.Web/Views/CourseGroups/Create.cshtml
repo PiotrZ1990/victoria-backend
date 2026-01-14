@@ -1,0 +1,50 @@
+﻿@model Victoria.Web.Models.Education.CourseGroupCreateAndEditViewModel
+@{
+    ViewData["Title"] = "Create Course Group";
+}
+
+<h2 class="mb-3">Create Course Group</h2>
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">LanguageCourseId</label>
+        <input class="form-control" asp-for="LanguageCourseId" />
+        <span class="text-danger" asp-validation-for="LanguageCourseId"></span>
+        <small class="text-muted">Weź Id z listy LanguageCourses.</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Group name</label>
+        <input class="form-control" asp-for="GroupName" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">StartDate</label>
+            <input class="form-control" type="date" asp-for="StartDate" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">EndDate</label>
+            <input class="form-control" type="date" asp-for="EndDate" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Capacity</label>
+            <input class="form-control" asp-for="Capacity" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input class="form-control" asp-for="Location" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+        <label class="form-check-label">Active</label>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/CourseGroups">Cancel</a>
+</form>
