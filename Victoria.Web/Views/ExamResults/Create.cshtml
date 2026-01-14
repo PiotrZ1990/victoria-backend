@@ -1,0 +1,48 @@
+﻿@model Victoria.Web.Models.Education.ExamResultCreateViewModel
+@{
+    ViewData["Title"] = "Create Exam Result";
+}
+
+<h2 class="mb-3">Create Exam Result</h2>
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Exam session</label>
+        <select class="form-select" name="ExamSessionId">
+            <option value="">-- select --</option>
+            @foreach (var s in Model.Sessions)
+            {
+                <option value="@s.Id">@s.Display</option>
+            }
+        </select>
+        <span class="text-danger" asp-validation-for="ExamSessionId"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Student</label>
+        <select class="form-select" name="StudentId">
+            <option value="">-- select --</option>
+            @foreach (var st in Model.Students)
+            {
+                <option value="@st.Id">@st.FullName</option>
+            }
+        </select>
+        <span class="text-danger" asp-validation-for="StudentId"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Score</label>
+        <input class="form-control" name="Score" value="@Model.Score" />
+        <span class="text-danger" asp-validation-for="Score"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" name="Notes" rows="4">@Model.Notes</textarea>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/ExamResults">Cancel</a>
+</form>

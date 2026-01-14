@@ -1,20 +1,30 @@
-﻿using Victoria.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Victoria.Domain.Entities.Education
+namespace Victoria.Domain.Entities.Education;
+
+public class ExamResult
 {
-    public class ExamResult
-    {
-        public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        public int ExamSessionId { get; set; }
-        public ExamSession ExamSession { get; set; }
+    // =========================
+    // RELATIONS
+    // =========================
+    public int ExamSessionId { get; set; }
+    public ExamSession ExamSession { get; set; } = default!;
 
-        public int StudentId { get; set; }
-        public Student Student { get; set; }
+    public int StudentId { get; set; }
+    public Student Student { get; set; } = default!;
 
-        public decimal Score { get; set; }
-        public string Result { get; set; }       // Pass / Fail / Band score
+    // =========================
+    // DATA
+    // =========================
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Score { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
+    [MaxLength(1000)]
+    public string? Notes { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 }

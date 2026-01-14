@@ -124,4 +124,26 @@ public class ExamSessionsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("lookup")]
+    public async Task<IActionResult> Lookup()
+    {
+        var list = await _db.ExamSessions
+            .Include(x => x.Exam)
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.SessionDate)
+            .Select(x => new
+            {
+                id = x.Id,
+                display =
+                    x.Exam.Name + " | " +
+                    x.SessionDate.ToString("yyyy-MM-dd HH:mm") +
+                    (x.Location != null ? " | " + x.Location : "") +
+                    " | capacity: " + x.Capacity
+            })
+            .ToListAsync();
+
+        return Ok(list);
+    }
+
 }

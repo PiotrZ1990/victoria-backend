@@ -1,0 +1,35 @@
+﻿@model Victoria.Web.Models.Education.ExamResultDetailsViewModel
+@{
+    ViewData["Title"] = "Exam Result Details";
+}
+
+<h2 class="mb-3">Exam Result Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>ExamSessionId:</strong> @Model.ExamSessionId</p>
+        <p><strong>StudentId:</strong> @Model.StudentId</p>
+        <p><strong>Score:</strong> @Model.Score</p>
+        <p><strong>Notes:</strong> @(string.IsNullOrWhiteSpace(Model.Notes) ? "-" : Model.Notes)</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <hr />
+        <a class="btn btn-secondary" href="/ExamResults">← Back</a>
+        <a class="btn btn-warning ms-2" href="/ExamResults/Edit/@Model.Id">Edit</a>
+
+        <form method="post" action="/ExamResults/Delete/@Model.Id" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-danger ms-2" onclick="return confirm('Delete?');">Delete</button>
+        </form>
+    </div>
+</div>
