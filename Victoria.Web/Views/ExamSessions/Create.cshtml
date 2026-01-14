@@ -1,0 +1,40 @@
+﻿@model Victoria.Web.Models.Education.ExamSessionCreateViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Create Exam Session";
+}
+
+<h2 class="mb-3">Create Exam Session</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Exam</label>
+        <select class="form-select" asp-for="ExamId" asp-items="(SelectList)ViewBag.Exams">
+            <option value="">-- select --</option>
+        </select>
+        <span class="text-danger" asp-validation-for="ExamId"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Session date</label>
+        <input class="form-control" type="date" asp-for="SessionDate" />
+        <span class="text-danger" asp-validation-for="SessionDate"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input class="form-control" asp-for="Location" />
+        <span class="text-danger" asp-validation-for="Location"></span>
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <a class="btn btn-secondary" href="/ExamSessions">Cancel</a>
+</form>
