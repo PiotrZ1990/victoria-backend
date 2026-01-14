@@ -271,6 +271,16 @@ namespace Victoria.Infrastructure.Data
             modelBuilder.Entity<LanguageCourse>()
                 .Property(x => x.Price)
                 .HasPrecision(18, 2);
+            
+            // (opcjonalnie ale polecam) UpdatedAt
+            modelBuilder.Entity<LanguageCourse>()
+                .Property(x => x.UpdatedAt)
+                .IsRequired(false);
+
+            // (bonus: naprawi warning o ExamResult.Score jeśli nadal jest)
+            modelBuilder.Entity<ExamResult>()
+                .Property(x => x.Score)
+                .HasPrecision(18, 2);
 
             modelBuilder.Entity<CourseGroup>()
                 .HasOne(x => x.LanguageCourse)

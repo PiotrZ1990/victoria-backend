@@ -1,0 +1,42 @@
+﻿@model Victoria.Web.Models.Education.LanguageCourseDetailsViewModel
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<h2 class="mb-3">Course Details</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Id:</strong> @Model.Id</p>
+        <p><strong>Name:</strong> @Model.Name</p>
+        <p><strong>Language:</strong> @(Model.Language ?? "-")</p>
+        <p><strong>Level:</strong> @(Model.Level ?? "-")</p>
+        <p><strong>Price:</strong> @Model.Price.ToString("0.00") @Model.Currency</p>
+        <p><strong>Active:</strong> @(Model.IsActive ? "Yes" : "No")</p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <hr />
+            <p>@Model.Description</p>
+        }
+
+        <hr />
+        <a class="btn btn-secondary" href="/LanguageCourses">← Back</a>
+        <a class="btn btn-warning ms-2" href="/LanguageCourses/Edit/@Model.Id">Edit</a>
+
+        <form method="post" action="/LanguageCourses/Delete/@Model.Id" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-danger ms-2" onclick="return confirm('Delete?');">Delete</button>
+        </form>
+    </div>
+</div>
