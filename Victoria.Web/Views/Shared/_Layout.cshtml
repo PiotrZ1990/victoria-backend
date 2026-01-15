@@ -1,47 +1,261 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Victoria.Web</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Victoria</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Victoria.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var jwt = Context?.Session?.GetString("JWT");
+        var isLogged = !string.IsNullOrWhiteSpace(jwt);
+
+        var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "").ToLowerInvariant();
+        var currentAction = (ViewContext.RouteData.Values["action"]?.ToString() ?? "").ToLowerInvariant();
+
+        bool IsC(string name) => currentController == name.ToLowerInvariant();
+        bool IsIn(params string[] names) => names.Any(x => currentController == x.ToLowerInvariant());
+
+        // które sekcje mają być otwarte?
+        var openCrm = IsIn("leads", "casefiles");
+        var openCases = IsIn("studyapplications", "visaapplications", "invoices", "payments");
+        var openDocs = IsIn("documents", "checklists"); // jeśli masz ChecklistsController na web
+        var openEdu = IsIn("languagecourses", "coursegroups", "students", "enrollments", "exams", "examsessions", "examresults");
+        var openCms = IsIn("newsposts", "teachers", "testimonials", "pages", "pagesections", "settings");
+        var openAdmin = IsIn("employees");
+        var openReports = IsIn("reports");
+
+        string ActiveIf(string hrefStartsWith)
+        {
+            // proste podświetlenie po prefixie URL
+            var path = Context?.Request?.Path.Value?.ToLowerInvariant() ?? "";
+            return path.StartsWith(hrefStartsWith.ToLowerInvariant()) ? "active" : "";
+        }
+    }
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Victoria.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">Victoria</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbar"
+                        aria-controls="topbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                <div class="collapse navbar-collapse" id="topbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if (isLogged)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveIf("/reports/dashboard"))" href="/Reports/Dashboard">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveIf("/casefiles"))" href="/CaseFiles">Case Files</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveIf("/leads"))" href="/Leads">CRM Leads</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (isLogged)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" href="/Auth/Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Auth/Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+
+    @if (isLogged)
+    {
+        <div class="app-shell">
+            <aside class="sidebar border-end">
+                <div class="p-3">
+                    <div class="small text-muted mb-2">Navigation</div>
+
+                    <!-- UWAGA: celowo NIE używamy data-bs-parent,
+                         bo to wymusza tylko jedną otwartą sekcję i resetuje stan -->
+                    <div class="accordion" id="sideNav">
+
+                        <!-- CRM -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-crm">
+                                <button class="accordion-button @(openCrm ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-crm"
+                                        aria-expanded="@(openCrm.ToString().ToLower())" aria-controls="c-crm">
+                                    CRM
+                                </button>
+                            </h2>
+                            <div id="c-crm" class="accordion-collapse collapse @(openCrm ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/leads"))" href="/Leads">Leads</a>
+                                    <a class="nav-link side-link @(ActiveIf("/casefiles"))" href="/CaseFiles">Case Files</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cases -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-cases">
+                                <button class="accordion-button @(openCases ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-cases"
+                                        aria-expanded="@(openCases.ToString().ToLower())" aria-controls="c-cases">
+                                    Cases
+                                </button>
+                            </h2>
+                            <div id="c-cases" class="accordion-collapse collapse @(openCases ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/studyapplications"))" href="/StudyApplications">Study Applications</a>
+                                    <a class="nav-link side-link @(ActiveIf("/visaapplications"))" href="/VisaApplications">Visa Applications</a>
+                                    <a class="nav-link side-link @(ActiveIf("/invoices"))" href="/Invoices">Invoices</a>
+                                    <a class="nav-link side-link @(ActiveIf("/payments"))" href="/Payments">Payments</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-docs">
+                                <button class="accordion-button @(openDocs ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-docs"
+                                        aria-expanded="@(openDocs.ToString().ToLower())" aria-controls="c-docs">
+                                    Documents
+                                </button>
+                            </h2>
+                            <div id="c-docs" class="accordion-collapse collapse @(openDocs ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <!-- dokumenty są per Case / per Application -->
+                                    <a class="nav-link side-link @(ActiveIf("/casefiles"))" href="/CaseFiles">Go to CaseFiles (documents per case)</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-edu">
+                                <button class="accordion-button @(openEdu ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-edu"
+                                        aria-expanded="@(openEdu.ToString().ToLower())" aria-controls="c-edu">
+                                    Education
+                                </button>
+                            </h2>
+                            <div id="c-edu" class="accordion-collapse collapse @(openEdu ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/languagecourses"))" href="/LanguageCourses">Language Courses</a>
+                                    <a class="nav-link side-link @(ActiveIf("/coursegroups"))" href="/CourseGroups">Course Groups</a>
+                                    <a class="nav-link side-link @(ActiveIf("/students"))" href="/Students">Students</a>
+                                    <a class="nav-link side-link @(ActiveIf("/enrollments"))" href="/Enrollments">Enrollments</a>
+                                    <a class="nav-link side-link @(ActiveIf("/exams"))" href="/Exams">Exams</a>
+                                    <a class="nav-link side-link @(ActiveIf("/examsessions"))" href="/ExamSessions">Exam Sessions</a>
+                                    <a class="nav-link side-link @(ActiveIf("/examresults"))" href="/ExamResults">Exam Results</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CMS -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-cms">
+                                <button class="accordion-button @(openCms ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-cms"
+                                        aria-expanded="@(openCms.ToString().ToLower())" aria-controls="c-cms">
+                                    CMS
+                                </button>
+                            </h2>
+                            <div id="c-cms" class="accordion-collapse collapse @(openCms ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/newsposts"))" href="/NewsPosts">News Posts</a>
+                                    <a class="nav-link side-link @(ActiveIf("/teachers"))" href="/Teachers">Teachers</a>
+                                    <a class="nav-link side-link @(ActiveIf("/testimonials"))" href="/Testimonials">Testimonials</a>
+                                    <a class="nav-link side-link @(ActiveIf("/pages"))" href="/Pages">Pages</a>
+                                    <a class="nav-link side-link @(ActiveIf("/pagesections"))" href="/PageSections">Page Sections</a>
+                                    <a class="nav-link side-link @(ActiveIf("/settings"))" href="/Settings">Settings</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-admin">
+                                <button class="accordion-button @(openAdmin ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-admin"
+                                        aria-expanded="@(openAdmin.ToString().ToLower())" aria-controls="c-admin">
+                                    Admin
+                                </button>
+                            </h2>
+                            <div id="c-admin" class="accordion-collapse collapse @(openAdmin ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/employees"))" href="/Employees">Employees</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="h-reports">
+                                <button class="accordion-button @(openReports ? "" : "collapsed")"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#c-reports"
+                                        aria-expanded="@(openReports.ToString().ToLower())" aria-controls="c-reports">
+                                    Reports
+                                </button>
+                            </h2>
+                            <div id="c-reports" class="accordion-collapse collapse @(openReports ? "show" : "")">
+                                <div class="accordion-body p-2">
+                                    <a class="nav-link side-link @(ActiveIf("/reports/dashboard"))" href="/Reports/Dashboard">Dashboard</a>
+                                    <a class="nav-link side-link @(ActiveIf("/reports/invoices"))" href="/Reports/Invoices">Invoices</a>
+                                    <a class="nav-link side-link @(ActiveIf("/reports/payments"))" href="/Reports/Payments">Payments</a>
+
+                                    <hr class="my-2" />
+
+                                    <a class="nav-link side-link @(ActiveIf("/reports/outstandinginvoicespdf"))" href="/Reports/OutstandingInvoicesPdf">Outstanding (PDF)</a>
+                                    <a class="nav-link side-link @(ActiveIf("/reports/outstandinginvoicesexcel"))" href="/Reports/OutstandingInvoicesExcel">Outstanding (Excel)</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+
+            <main class="content">
+                <div class="container-fluid py-3">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - Victoria.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - Victoria - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

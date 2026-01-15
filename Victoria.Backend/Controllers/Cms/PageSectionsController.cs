@@ -15,13 +15,10 @@ public class PageSectionsController : ControllerBase
     private readonly AppDbContext _db;
     public PageSectionsController(AppDbContext db) { _db = db; }
 
-    // GET: api/pagesections/page/5
+    // GET: api/pagesections/page/{pageId}
     [HttpGet("page/{pageId:int}")]
     public async Task<IActionResult> GetByPage(int pageId)
     {
-        var pageExists = await _db.Pages.AnyAsync(x => x.Id == pageId);
-        if (!pageExists) return NotFound("Page not found");
-
         var list = await _db.PageSections
             .Where(x => x.PageId == pageId)
             .OrderBy(x => x.Order)
@@ -29,15 +26,14 @@ public class PageSectionsController : ControllerBase
             {
                 Id = x.Id,
                 PageId = x.PageId,
-                SectionKey = x.SectionKey,
                 Title = x.Title,
                 Order = x.Order,
-                UpdatedAt = x.UpdatedAt
             })
             .ToListAsync();
 
         return Ok(list);
     }
+
 
     // GET: api/pagesections/10
     [HttpGet("{id:int}")]
@@ -83,6 +79,7 @@ public class PageSectionsController : ControllerBase
 
         return Ok(new { entity.Id });
     }
+
 
     // PUT: api/pagesections/10
     [HttpPut("{id:int}")]
