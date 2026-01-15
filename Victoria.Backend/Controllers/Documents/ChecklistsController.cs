@@ -111,58 +111,6 @@ public class ChecklistsController : ControllerBase
     }
 
     // =========================================
-    // SEED/INIT ACCOMMODATION CHECKLIST FOR CASEFILE
-    // POST: api/checklists/init-accommodation
-    // =========================================
-    [HttpPost("init-accommodation")]
-    public async Task<IActionResult> InitAccommodation([FromBody] ChecklistInitDto dto)
-    {
-        var caseExists = await _db.CaseFiles.AnyAsync(x => x.Id == dto.CaseFileId);
-        if (!caseExists) return NotFound("CaseFile not found");
-
-        // templates
-        var templates = await _db.AccommodationDocumentChecklists.ToListAsync();
-        if (!templates.Any())
-        {
-            _db.AccommodationDocumentChecklists.AddRange(
-                new AccommodationDocumentChecklist { DocumentType = "Tenancy agreement / booking confirmation", IsRequired = true },
-                new AccommodationDocumentChecklist { DocumentType = "Address / landlord details", IsRequired = true },
-                new AccommodationDocumentChecklist { DocumentType = "Proof of payment / deposit", IsRequired = true },
-                new AccommodationDocumentChecklist { DocumentType = "Arrival date / check-in info", IsRequired = false },
-                new AccommodationDocumentChecklist { DocumentType = "Emergency contact", IsRequired = false },
-                new AccommodationDocumentChecklist { DocumentType = "Airport pickup details", IsRequired = false }
-            );
-            await _db.SaveChangesAsync();
-            templates = await _db.AccommodationDocumentChecklists.ToListAsync();
-        }
-
-        var existingChecklistIds = await _db.CaseAccommodationChecklistItems
-            .Where(x => x.CaseFileId == dto.CaseFileId)
-            .Select(x => x.ChecklistId)
-            .ToListAsync();
-
-        var toAdd = templates
-            .Where(t => !existingChecklistIds.Contains(t.Id))
-            .Select(t => new CaseAccommodationChecklistItem
-            {
-                CaseFileId = dto.CaseFileId,
-                ChecklistId = t.Id,
-                IsCompleted = false
-            })
-            .ToList();
-
-        _db.CaseAccommodationChecklistItems.AddRange(toAdd);
-        await _db.SaveChangesAsync();
-
-        return Ok(new
-        {
-            dto.CaseFileId,
-            Added = toAdd.Count,
-            TotalTemplates = templates.Count
-        });
-    }
-
-    // =========================================
     // GET APPLICATION CHECKLIST FOR CASEFILE
     // GET: api/checklists/application/{caseFileId}
     // =========================================
@@ -215,31 +163,6 @@ public class ChecklistsController : ControllerBase
     }
 
     // =========================================
-    // GET ACCOMMODATION CHECKLIST FOR CASEFILE
-    // GET: api/checklists/accommodation/{caseFileId}
-    // =========================================
-    [HttpGet("accommodation/{caseFileId:int}")]
-    public async Task<IActionResult> GetAccommodation(int caseFileId)
-    {
-        var items = await _db.CaseAccommodationChecklistItems
-            .Where(x => x.CaseFileId == caseFileId)
-            .Include(x => x.Checklist)
-            .OrderBy(x => x.ChecklistId)
-            .Select(x => new ChecklistItemGetDto
-            {
-                ItemId = x.Id,
-                ChecklistId = x.ChecklistId,
-                DocumentType = x.Checklist.DocumentType,
-                IsRequired = x.Checklist.IsRequired,
-                IsCompleted = x.IsCompleted,
-                DocumentId = x.DocumentId
-            })
-            .ToListAsync();
-
-        return Ok(items);
-    }
-
-    // =========================================
     // UPDATE APPLICATION ITEM
     // PUT: api/checklists/application/items/{itemId}
     // =========================================
@@ -253,8 +176,9 @@ public class ChecklistsController : ControllerBase
             return NotFound("Checklist item not found");
 
         item.IsCompleted = dto.IsCompleted;
+
         if (dto.DocumentId.HasValue)
-            item.DocumentId = dto.DocumentId; // tylko jak podane
+            item.DocumentId = dto.DocumentId;
 
         item.UpdatedAt = DateTime.UtcNow;
 
@@ -276,6 +200,7 @@ public class ChecklistsController : ControllerBase
             return NotFound("Checklist item not found");
 
         item.IsCompleted = dto.IsCompleted;
+
         if (dto.DocumentId.HasValue)
             item.DocumentId = dto.DocumentId;
 
@@ -283,28 +208,5 @@ public class ChecklistsController : ControllerBase
 
         await _db.SaveChangesAsync();
         return Ok(new { item.Id, item.CaseFileId, item.IsCompleted, item.DocumentId, item.UpdatedAt });
-    }
-
-    // =========================================
-    // UPDATE ACCOMMODATION ITEM
-    // PUT: api/checklists/accommodation/items/{itemId}
-    // =========================================
-    [HttpPut("accommodation/items/{itemId:int}")]
-    public async Task<IActionResult> UpdateAccommodationItem(int itemId, [FromBody] ChecklistItemUpdateDto dto)
-    {
-        var item = await _db.CaseAccommodationChecklistItems
-            .FirstOrDefaultAsync(x => x.Id == itemId);
-
-        if (item == null)
-            return NotFound("Checklist item not found");
-
-        item.IsCompleted = dto.IsCompleted;
-        if (dto.DocumentId.HasValue)
-            item.DocumentId = dto.DocumentId;
-
-        item.CompletedAt = dto.IsCompleted ? DateTime.UtcNow : null;
-
-        await _db.SaveChangesAsync();
-        return Ok(new { item.Id, item.CaseFileId, item.IsCompleted, item.DocumentId, item.CompletedAt });
     }
 }

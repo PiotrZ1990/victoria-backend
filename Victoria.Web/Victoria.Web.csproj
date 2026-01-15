@@ -10,8 +10,4 @@
     <ProjectReference Include="..\Victoria.Domain\Victoria.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Crm\" />
-  </ItemGroup>
-
 </Project>

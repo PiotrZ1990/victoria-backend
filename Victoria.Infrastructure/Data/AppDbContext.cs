@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Victoria.Domain.Entities;
-using Victoria.Domain.Entities.Accommodation;
 using Victoria.Domain.Entities.Applications;
 using Victoria.Domain.Entities.Cases;
 using Victoria.Domain.Entities.Cms;
@@ -33,8 +31,6 @@ namespace Victoria.Infrastructure.Data
         public DbSet<CaseFile> CaseFiles { get; set; }
         public DbSet<StudyApplication> StudyApplications { get; set; }
         public DbSet<VisaApplication> VisaApplications => Set<VisaApplication>();
-        public DbSet<AccommodationRequest> AccommodationRequests { get; set; }
-        public DbSet<AccommodationBooking> AccommodationBookings { get; set; }
         public DbSet<FileResource> FileResources => Set<FileResource>();
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<ApplicationDocument> ApplicationDocuments { get; set; }
@@ -56,7 +52,6 @@ namespace Victoria.Infrastructure.Data
         public DbSet<PageSection> PageSections { get; set; }
         public DbSet<Domain.Entities.CMS.NewsPost> NewsPosts => Set<NewsPost>();
         public DbSet<Testimonial> Testimonials { get; set; }
-        public DbSet<Expert> Experts { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<CaseApplicationChecklistItem> CaseApplicationChecklistItems => Set<CaseApplicationChecklistItem>();
         public DbSet<CaseVisaChecklistItem> CaseVisaChecklistItems => Set<CaseVisaChecklistItem>();
@@ -150,39 +145,6 @@ namespace Victoria.Infrastructure.Data
 
             modelBuilder.Entity<VisaApplication>()
                 .HasIndex(x => x.Status);
-
-            // =========================
-            // ACCOMMODATION
-            // =========================
-            modelBuilder.Entity<AccommodationRequest>()
-                .HasOne(x => x.CaseFile)
-                .WithMany()
-                .HasForeignKey(x => x.CaseFileId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<AccommodationRequest>()
-                .Property(x => x.Status)
-                .HasConversion<int>(); // ENUM
-
-            modelBuilder.Entity<AccommodationRequest>()
-                .Property(x => x.BudgetMin)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<AccommodationRequest>()
-                .Property(x => x.BudgetMax)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<AccommodationRequest>()
-                .HasIndex(x => x.Status);
-
-            modelBuilder.Entity<AccommodationBooking>()
-                .HasOne(x => x.AccommodationRequest)
-                .WithOne()
-                .HasForeignKey<AccommodationBooking>(x => x.AccommodationRequestId);
-
-            modelBuilder.Entity<AccommodationBooking>()
-                .Property(x => x.MonthlyPrice)
-                .HasPrecision(18, 2);
 
             // =========================
             // DOCUMENTS
