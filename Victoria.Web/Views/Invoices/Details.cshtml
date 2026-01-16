@@ -37,6 +37,12 @@
         <p><strong>Paid:</strong> @Model.PaidAmount @Model.Currency</p>
         <p><strong>Remaining:</strong> @Model.RemainingAmount @Model.Currency</p>
 
+        <a class="btn btn-outline-dark ms-2"
+           href="/Printouts/InvoiceDocx?invoiceId=@Model.Id">
+            Download DOCX (template)
+        </a>
+
+
         <a class="btn btn-secondary"
            href="/CaseFiles/Details/@Model.CaseFileId">
             ← Back to Case

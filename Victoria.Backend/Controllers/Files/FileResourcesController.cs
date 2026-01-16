@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Victoria.Backend.DTOs.Files;
 using Victoria.Domain.Entities.Files;
 using Victoria.Infrastructure.Data;
 
@@ -7,7 +8,6 @@ namespace Victoria.Backend.Controllers.Files;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo Staff/Admin
 public class FileResourcesController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -23,9 +23,9 @@ public class FileResourcesController : ControllerBase
     [HttpPost("upload-image")]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(25_000_000)]
-    public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadImage([FromForm] ImageUploadRequestDto req)
     {
-        if (file == null || file.Length == 0)
+        if (req.File == null || req.File.Length == 0)
             return BadRequest("File is required");
 
         var root = _config["FileStorage:UploadRoot"] ?? "uploads";
@@ -37,21 +37,21 @@ public class FileResourcesController : ControllerBase
         if (!Directory.Exists(targetFolder))
             Directory.CreateDirectory(targetFolder);
 
-        var safeOriginalName = Path.GetFileName(file.FileName);
+        var safeOriginalName = Path.GetFileName(req.File.FileName);
         var ext = Path.GetExtension(safeOriginalName);
         var storedFileName = $"{Guid.NewGuid():N}{ext}";
         var fullPath = Path.Combine(targetFolder, storedFileName);
 
         await using (var stream = System.IO.File.Create(fullPath))
         {
-            await file.CopyToAsync(stream);
+            await req.File.CopyToAsync(stream);
         }
 
         var fileResource = new FileResource
         {
             FileName = safeOriginalName,
-            ContentType = file.ContentType ?? "application/octet-stream",
-            FileSize = file.Length,
+            ContentType = req.File.ContentType ?? "application/octet-stream",
+            FileSize = req.File.Length,
             FilePath = Path.Combine(root, subFolder, storedFileName).Replace("\\", "/"),
             UploadedAt = DateTime.UtcNow
         };
