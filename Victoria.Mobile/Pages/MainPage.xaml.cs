@@ -24,4 +24,18 @@ public partial class MainPage : ContentPage
             ResultLabel.Text = $"API FAIL ❌ {ex.Message}";
         }
     }
+
+    private async void OnTestAuthClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            ResultLabel.Text = "Testing auth...";
+            var json = await _api.GetStringAsync("api/leads"); // jeśli to jest chronione JWT u Ciebie
+            ResultLabel.Text = $"AUTH OK ✅ (api/leads length: {json.Length})";
+        }
+        catch (Exception ex)
+        {
+            ResultLabel.Text = $"AUTH FAIL ❌ {ex.Message}";
+        }
+    }
 }

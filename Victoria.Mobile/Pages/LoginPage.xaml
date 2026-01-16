@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Login">
+
+    <VerticalStackLayout Padding="24" Spacing="12">
+        <Label Text="Victoria"
+               FontSize="28"
+               FontAttributes="Bold" />
+
+        <Label Text="Zaloguj się (mobile client)"
+               FontSize="14" />
+
+        <Entry x:Name="EmailEntry"
+               Placeholder="Email"
+               Keyboard="Email" />
+
+        <Entry x:Name="PasswordEntry"
+               Placeholder="Password"
+               IsPassword="True" />
+
+        <Button Text="Login"
+                Clicked="OnLoginClicked" />
+
+        <Button Text="Clear token (debug)"
+                Clicked="OnClearTokenClicked"
+                BackgroundColor="#eee"
+                TextColor="#000"/>
+
+        <Label x:Name="StatusLabel"
+               Text=""
+               FontSize="14" />
+    </VerticalStackLayout>
+</ContentPage>

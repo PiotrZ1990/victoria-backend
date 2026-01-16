@@ -2,7 +2,8 @@
 <ContentPage
     x:Class="Victoria.Mobile.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Home">
 
     <VerticalStackLayout Padding="24" Spacing="12">
         <Label Text="Victoria Mobile"
@@ -12,8 +13,11 @@
         <Button Text="Test API (Swagger JSON)"
                 Clicked="OnTestApiClicked" />
 
+        <Button Text="Test Authorized API (Leads)"
+                Clicked="OnTestAuthClicked" />
+
         <Label x:Name="ResultLabel"
-               Text="Kliknij przycisk, żeby sprawdzić API..."
+               Text="..."
                FontSize="14" />
     </VerticalStackLayout>
 </ContentPage>

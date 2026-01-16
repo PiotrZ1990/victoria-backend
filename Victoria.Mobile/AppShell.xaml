@@ -6,6 +6,11 @@
     xmlns:pages="clr-namespace:Victoria.Mobile.Pages">
 
     <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate pages:LoginPage}"
+        Route="LoginPage" />
+
+    <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="MainPage" />
