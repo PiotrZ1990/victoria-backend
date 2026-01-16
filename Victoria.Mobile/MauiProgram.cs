@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Victoria.Mobile.Services;
 
 namespace Victoria.Mobile
 {
@@ -15,8 +16,11 @@ namespace Victoria.Mobile
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            builder.Services.AddSingleton<CaseFilesService>();
+
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

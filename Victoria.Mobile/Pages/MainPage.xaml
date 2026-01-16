@@ -3,23 +3,11 @@
     x:Class="Victoria.Mobile.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Home">
+    Title="Victoria">
 
-    <VerticalStackLayout Padding="24" Spacing="12">
+    <VerticalStackLayout Padding="16" Spacing="12">
+        <Label Text="Victoria - Client App" FontSize="20" FontAttributes="Bold" />
+        <Button Text="Open My Cases" Clicked="OnOpenCasesClicked" />
         <Button Text="Logout" Clicked="OnLogoutClicked" />
-
-        <Label Text="Victoria Mobile"
-               FontSize="28"
-               FontAttributes="Bold" />
-
-        <Button Text="Test API (Swagger JSON)"
-                Clicked="OnTestApiClicked" />
-
-        <Button Text="Test Authorized API (Leads)"
-                Clicked="OnTestAuthClicked" />
-
-        <Label x:Name="ResultLabel"
-               Text="..."
-               FontSize="14" />
     </VerticalStackLayout>
 </ContentPage>
