@@ -38,4 +38,11 @@ public partial class MainPage : ContentPage
             ResultLabel.Text = $"AUTH FAIL ❌ {ex.Message}";
         }
     }
+
+    private async void OnLogoutClicked(object sender, EventArgs e)
+    {
+        TokenStore.Clear();
+        await Shell.Current.GoToAsync("//LoginPage");
+    }
+
 }

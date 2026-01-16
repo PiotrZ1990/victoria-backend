@@ -6,6 +6,8 @@
     Title="Home">
 
     <VerticalStackLayout Padding="24" Spacing="12">
+        <Button Text="Logout" Clicked="OnLogoutClicked" />
+
         <Label Text="Victoria Mobile"
                FontSize="28"
                FontAttributes="Bold" />
