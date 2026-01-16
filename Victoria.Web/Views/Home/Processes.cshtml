@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Business Processes";
+}
+
+<h2 class="mb-3">Business Processes</h2>
+<div class="text-muted mb-3">
+    This page groups the end-to-end business flows you can demonstrate during defense.
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Process A: CRM → Case → Applications → Documents → Payments</div>
+            <div class="card-body">
+                <ol class="mb-3">
+                    <li><a href="/Leads">Go to CRM Leads</a> → create a lead</li>
+                    <li>Convert lead to Case File (button in Leads list)</li>
+                    <li><a href="/CaseFiles">Open CaseFiles</a> → Details → Study/Visa Applications</li>
+                    <li>Upload documents (Study/Visa) and approve/reject</li>
+                    <li>Create Invoice → add Payments → invoice status updates</li>
+                    <li>Reports: PDF/Excel + Word printout</li>
+                </ol>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-sm btn-primary" href="/Leads">Start in Leads</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/CaseFiles">CaseFiles</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Reports/Dashboard">Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Process B: Education module</div>
+            <div class="card-body">
+                <ol class="mb-3">
+                    <li><a href="/LanguageCourses">Language Courses</a> → create a course</li>
+                    <li><a href="/CourseGroups">Course Groups</a> → assign course, create group</li>
+                    <li><a href="/Students">Students</a> → add student</li>
+                    <li><a href="/Enrollments">Enrollments</a> → enroll student into group</li>
+                    <li><a href="/Exams">Exams</a> → create exam</li>
+                    <li><a href="/ExamSessions">Exam Sessions</a> → create a session</li>
+                    <li><a href="/ExamResults">Exam Results</a> → add result for student & session</li>
+                </ol>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-sm btn-primary" href="/LanguageCourses">Start in Courses</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/Students">Students</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/ExamResults">Exam Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Process C: CMS management</div>
+            <div class="card-body">
+                <ol class="mb-3">
+                    <li><a href="/NewsPosts">News Posts</a> → create/edit content</li>
+                    <li><a href="/Teachers">Teachers</a> → add teacher with photo upload</li>
+                    <li><a href="/Testimonials">Testimonials</a> → add reviews</li>
+                    <li><a href="/Pages">Pages</a> + <a href="/PageSections">Sections</a> → structure website content</li>
+                    <li><a href="/Settings">Settings</a> → dynamic configuration (e.g., Word template path)</li>
+                </ol>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-sm btn-primary" href="/Pages">Start in Pages</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/Teachers">Teachers</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Settings">Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Admin process: Employees</div>
+            <div class="card-body">
+                <ol class="mb-3">
+                    <li><a href="/Employees">Employees</a> → CRUD employees</li>
+                    <li>Roles/permissions are already part of authentication model</li>
+                </ol>
+
+                <a class="btn btn-sm btn-primary" href="/Employees">Open Employees</a>
+            </div>
+        </div>
+    </div>
+</div>

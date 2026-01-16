@@ -54,13 +54,20 @@
                         @if (isLogged)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(ActiveIf("/reports/dashboard"))" href="/Reports/Dashboard">Dashboard</a>
+                                <a class="nav-link" href="/Home/Dashboard">Dashboard</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Home/Processes">Business Processes</a>
+                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link @(ActiveIf("/casefiles"))" href="/CaseFiles">Case Files</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ActiveIf("/leads"))" href="/Leads">CRM Leads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Home/Cruds">CRUDs</a>
                             </li>
                         }
                     </ul>

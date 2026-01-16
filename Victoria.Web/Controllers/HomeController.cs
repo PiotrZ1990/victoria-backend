@@ -1,25 +1,52 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using Victoria.Web.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Victoria.Web.Controllers
+namespace Victoria.Web.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private bool IsLogged()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        var jwt = HttpContext.Session.GetString("JWT");
+        return !string.IsNullOrWhiteSpace(jwt);
     }
+
+    // "/" - jeśli zalogowany -> Dashboard, jeśli nie -> Landing
+    [HttpGet]
+    public IActionResult Index()
+    {
+        if (IsLogged())
+            return RedirectToAction(nameof(Dashboard));
+
+        return View(); // Views/Home/Index.cshtml
+    }
+
+    // ✅ Dashboard dopiero po zalogowaniu
+    [HttpGet]
+    public IActionResult Dashboard()
+    {
+        if (!IsLogged())
+            return RedirectToAction("Login", "Auth");
+
+        return View(); // Views/Home/Dashboard.cshtml
+    }
+
+    // ✅ Procesy też tylko po zalogowaniu
+    [HttpGet]
+    public IActionResult Processes()
+    {
+        if (!IsLogged())
+            return RedirectToAction("Login", "Auth");
+
+        return View(); // Views/Home/Processes.cshtml
+    }
+
+    [HttpGet]
+    public IActionResult Cruds()
+    {
+        if (!IsLogged())
+            return RedirectToAction("Login", "Auth");
+
+        return View();
+    }
+
 }

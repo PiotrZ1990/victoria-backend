@@ -1,8 +1,27 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-2">Welcome to Victoria</h2>
+                <p class="text-muted mb-4">
+                    This is the staff/admin system panel. Please log in to continue.
+                </p>
+
+                <div class="d-flex gap-2">
+                    <a class="btn btn-primary" href="/Auth/Login">Login</a>
+                    <a class="btn btn-outline-secondary" href="/Home/Privacy">Privacy</a>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="small text-muted">
+                    After login you’ll get access to CRM, Cases, Documents, Education, CMS, Admin and Reports.
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-1">Dashboard</h2>
+        <div class="text-muted">Quick overview and shortcuts for staff.</div>
+    </div>
+
+    <a class="btn btn-dark" href="/Home/Processes">Open Business Processes</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Quick actions</h5>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-primary" href="/Leads/Create">+ Add Lead</a>
+                    <a class="btn btn-outline-primary" href="/CaseFiles">Go to Case Files</a>
+                    <a class="btn btn-outline-secondary" href="/Reports/Dashboard">Reports dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Fast navigation</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="fw-semibold">CRM + Cases</div>
+                            <div class="text-muted small">Leads, CaseFiles, Study/Visa, Invoices, Payments</div>
+                            <div class="d-flex gap-2 mt-2 flex-wrap">
+                                <a class="btn btn-sm btn-outline-primary" href="/Leads">Leads</a>
+                                <a class="btn btn-sm btn-outline-primary" href="/CaseFiles">CaseFiles</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Reports/Dashboard">Reports</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="fw-semibold">Education</div>
+                            <div class="text-muted small">Courses, Groups, Students, Enrollments, Exams</div>
+                            <div class="d-flex gap-2 mt-2 flex-wrap">
+                                <a class="btn btn-sm btn-outline-primary" href="/LanguageCourses">Courses</a>
+                                <a class="btn btn-sm btn-outline-primary" href="/Students">Students</a>
+                                <a class="btn btn-sm btn-outline-primary" href="/ExamResults">Results</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="fw-semibold">CMS</div>
+                            <div class="text-muted small">NewsPosts, Pages, Sections, Teachers, Testimonials, Settings</div>
+                            <div class="d-flex gap-2 mt-2 flex-wrap">
+                                <a class="btn btn-sm btn-outline-primary" href="/Pages">Pages</a>
+                                <a class="btn btn-sm btn-outline-primary" href="/NewsPosts">News</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Settings">Settings</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <div class="fw-semibold">Admin</div>
+                            <div class="text-muted small">Employees management</div>
+                            <div class="d-flex gap-2 mt-2 flex-wrap">
+                                <a class="btn btn-sm btn-outline-primary" href="/Employees">Employees</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="text-muted small">
+                    For defense: click <strong>Open Business Processes</strong> to show end-to-end flows.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

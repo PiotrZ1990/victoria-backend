@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "CRUDs";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-1">CRUDs</h2>
+        <div class="text-muted">
+            Quick access to create/manage any module depending on current needs.
+        </div>
+    </div>
+
+    <a class="btn btn-outline-dark" href="/Home/Dashboard">Back to Dashboard</a>
+</div>
+
+<div class="row g-3">
+
+    <!-- CRM / Cases -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-2">CRM & Cases</h5>
+                <div class="text-muted small mb-3">Leads → CaseFiles → Study/Visa → Invoices/Payments</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-sm btn-primary" href="/Leads/Create">+ Lead</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/Leads">Manage Leads</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/CaseFiles">Manage CaseFiles</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/StudyApplications">Study Applications</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/VisaApplications">Visa Applications</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/Invoices">Invoices</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Payments">Payments</a>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0 small">
+                    Documents are attached inside CaseFiles → Details → Study/Visa → Documents.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Education</h5>
+                <div class="text-muted small mb-3">Courses, students, enrollments, exams</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-sm btn-primary" href="/LanguageCourses/Create">+ Course</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/LanguageCourses">Manage Courses</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/CourseGroups">Course Groups</a>
+
+                    <a class="btn btn-sm btn-primary" href="/Students/Create">+ Student</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/Students">Manage Students</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/Enrollments">Enrollments</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/Exams">Exams</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/ExamSessions">Exam Sessions</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/ExamResults">Exam Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CMS -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-2">CMS</h5>
+                <div class="text-muted small mb-3">Content management (no hardcoded texts/images)</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-sm btn-primary" href="/NewsPosts/Create">+ News Post</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/NewsPosts">News Posts</a>
+
+                    <a class="btn btn-sm btn-primary" href="/Pages/Create">+ Page</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/Pages">Pages</a>
+
+                    <!-- PageSections wymagają pageId - więc dajemy wejście do Pages -->
+                    <a class="btn btn-sm btn-outline-secondary" href="/Pages">Page Sections (from Pages)</a>
+
+                    <a class="btn btn-sm btn-outline-secondary" href="/Teachers">Teachers</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Testimonials">Testimonials</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Settings">Settings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-2">Admin</h5>
+                <div class="text-muted small mb-3">User/roles-based access, staff panel utilities</div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-sm btn-outline-primary" href="/Employees">Employees</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
