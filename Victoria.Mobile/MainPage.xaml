@@ -9,7 +9,11 @@
                FontSize="28"
                FontAttributes="Bold" />
 
-        <Label Text="Krok 2.3 działa ✅ (UI OK)"
-               FontSize="16" />
+        <Button Text="Test API (Swagger JSON)"
+                Clicked="OnTestApiClicked" />
+
+        <Label x:Name="ResultLabel"
+               Text="Kliknij przycisk, żeby sprawdzić API..."
+               FontSize="14" />
     </VerticalStackLayout>
 </ContentPage>
