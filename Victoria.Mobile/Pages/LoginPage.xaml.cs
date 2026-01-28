@@ -25,8 +25,8 @@ public partial class LoginPage : ContentPage
 
             StatusLabel.Text = "Login OK ✅ Token saved.";
 
-            // Na razie po loginie wrzucimy prosty test na MainPage:
-            await Shell.Current.GoToAsync("//MainPage");
+            // ✅ po loginie przechodzimy do "Home" w FlyoutItem Route="main"
+            await Shell.Current.GoToAsync("//main/home");
         }
         catch (Exception ex)
         {

@@ -5,12 +5,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:Victoria.Mobile.Pages">
 
-    <!-- LOGIN jako start (lub Main jeśli już masz token-check) -->
+    <!-- LOGIN jako start -->
     <ShellContent
-        Route="LoginPage"
+        Route="login"
         ContentTemplate="{DataTemplate pages:LoginPage}" />
 
-    <ShellContent
-        Route="MainPage"
-        ContentTemplate="{DataTemplate pages:MainPage}" />
+    <!-- Główna część aplikacji (po zalogowaniu) -->
+    <FlyoutItem Title="Home" Route="main">
+        <ShellContent
+            Title="Home"
+            Route="home"
+            ContentTemplate="{DataTemplate pages:MainPage}" />
+
+        <ShellContent
+            Title="My Cases"
+            Route="cases"
+            ContentTemplate="{DataTemplate pages:MyCasesPage}" />
+    </FlyoutItem>
+
 </Shell>

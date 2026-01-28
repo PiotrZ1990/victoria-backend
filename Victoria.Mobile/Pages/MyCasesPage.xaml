@@ -11,7 +11,9 @@
 
         <Button Text="Refresh" Clicked="OnRefreshClicked" />
 
-        <CollectionView x:Name="CasesList" SelectionMode="None">
+        <CollectionView x:Name="CasesList"
+                        SelectionMode="Single"
+                        SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">

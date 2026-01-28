@@ -13,9 +13,15 @@ public class CaseFilesService
         _api = api;
     }
 
-    public async Task<List<CaseFileListModel>> GetAllAsync()
+    public async Task<List<CaseFileDetailsDto>> GetAllAsync()
     {
         var json = await _api.GetStringAsync("api/casefiles");
-        return JsonSerializer.Deserialize<List<CaseFileListModel>>(json, JsonOpts) ?? new();
+        return JsonSerializer.Deserialize<List<CaseFileDetailsDto>>(json, JsonOpts) ?? new();
+    }
+
+    public async Task<CaseFileDetailsDto> GetByIdAsync(int id)
+    {
+        // Backend ma CaseFilesController -> GET api/casefiles/{id}
+        return await _api.GetJsonAsync<CaseFileDetailsDto>($"api/casefiles/{id}");
     }
 }

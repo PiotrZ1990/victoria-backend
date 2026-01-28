@@ -9,7 +9,7 @@ public class MyCasesViewModel
 {
     private readonly CaseFilesService _service;
 
-    public ObservableCollection<CaseFileListModel> Items { get; } = new();
+    public ObservableCollection<CaseFileDetailsDto> Items { get; } = new();
 
     public bool IsBusy { get; private set; }
     public string? Error { get; private set; }
