@@ -10,21 +10,28 @@
 
             <Label Text="Case Details" FontSize="24" FontAttributes="Bold" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator x:Name="Loader" IsRunning="True" IsVisible="True" />
 
-            <Label Text="{Binding Error}" TextColor="Red" />
-
-            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12" IsVisible="{Binding Item, Converter={StaticResource NullToBoolConverter}}">
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="{Binding Item.ClientName}" FontSize="18" FontAttributes="Bold" />
-                    <Label Text="{Binding Item.Stage, StringFormat='Stage: {0}'}" />
-                    <Label Text="{Binding Item.Status, StringFormat='Status: {0}'}" />
-                    <Label Text="{Binding Item.CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}" FontSize="12" TextColor="Gray" />
-                    <Label Text="{Binding Item.Id, StringFormat='Case ID: {0}'}" FontSize="12" TextColor="Gray" />
+                    <Label x:Name="ClientNameLabel" FontAttributes="Bold" FontSize="18" />
+                    <Label x:Name="StageLabel" />
+                    <Label x:Name="StatusLabel" />
+
+                    <Label x:Name="CreatedAtLabel" FontSize="12" TextColor="Gray" />
+                    <Label x:Name="CaseIdLabel" FontSize="12" TextColor="Gray" />
                 </VerticalStackLayout>
             </Frame>
 
-            <Button Text="Back" Clicked="OnBackClicked" />
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Next actions" FontAttributes="Bold" />
+                    <Button Text="Documents (next)" IsEnabled="False" />
+                    <Button Text="Invoices (next)" IsEnabled="False" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label x:Name="ErrorLabel" TextColor="Red" />
 
         </VerticalStackLayout>
     </ScrollView>

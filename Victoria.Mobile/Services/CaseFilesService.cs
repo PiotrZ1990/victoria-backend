@@ -13,15 +13,27 @@ public class CaseFilesService
         _api = api;
     }
 
-    public async Task<List<CaseFileDetailsDto>> GetAllAsync()
+    // LISTA (u Ciebie już działa – zostawiamy)
+    public async Task<List<CaseDetailsModel>> GetMyCasesAsync()
     {
-        var json = await _api.GetStringAsync("api/casefiles");
-        return JsonSerializer.Deserialize<List<CaseFileDetailsDto>>(json, JsonOpts) ?? new();
+        // U Ciebie to już działa, więc NIE zmieniamy endpointu.
+        // Zakładam, że bierzesz listę z api/casefiles
+        // Jeśli u Ciebie jest inne, to tu masz swój działający adres.
+        return await _api.GetJsonAsync<List<CaseDetailsModel>>("api/casefiles");
     }
 
-    public async Task<CaseFileDetailsDto> GetByIdAsync(int id)
+    public async Task<List<CaseDetailsModel>> GetAllAsync()
     {
-        // Backend ma CaseFilesController -> GET api/casefiles/{id}
-        return await _api.GetJsonAsync<CaseFileDetailsDto>($"api/casefiles/{id}");
+        // lista case'ów (tak jak było wcześniej w projekcie)
+        // endpoint ma być taki jak ten, z którego już korzystałeś i działał
+        return await _api.GetJsonAsync<List<CaseDetailsModel>>("api/casefiles");
+    }
+
+
+    // DETAILS
+    public async Task<CaseDetailsModel> GetByIdAsync(int id)
+    {
+        // Standardowo: GET api/casefiles/{id}
+        return await _api.GetJsonAsync<CaseDetailsModel>($"api/casefiles/{id}");
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Victoria.Mobile.Models;
 
-public class CaseFileDetailsDto
+public class CaseDetailsModel
 {
     public int Id { get; set; }
     public string? ClientName { get; set; }

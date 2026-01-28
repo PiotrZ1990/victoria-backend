@@ -22,37 +22,27 @@ public partial class MyCasesPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await Reload();
+        await _vm.LoadAsync();
+        ErrorLabel.Text = _vm.Error ?? "";
     }
 
     private async void OnRefreshClicked(object sender, EventArgs e)
     {
-        await Reload();
+        await _vm.LoadAsync();
+        ErrorLabel.Text = _vm.Error ?? "";
     }
 
     private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var selected = e.CurrentSelection?.FirstOrDefault();
-        if (selected == null)
-            return;
+        if (selected == null) return;
 
-        var idProp = selected.GetType().GetProperty("Id");
-        var idVal = idProp?.GetValue(selected);
+        // u Ciebie element listy ma Id
+        dynamic item = selected;
+        int id = (int)item.Id;
 
         ((CollectionView)sender).SelectedItem = null;
 
-        if (idVal == null || !int.TryParse(idVal.ToString(), out var caseId))
-            return;
-
-        await Shell.Current.GoToAsync("case-details", new Dictionary<string, object>
-        {
-            ["CaseFileId"] = caseId
-        });
-    }
-
-    private async Task Reload()
-    {
-        await _vm.LoadAsync();
-        ErrorLabel.Text = _vm.Error ?? "";
+        await Shell.Current.GoToAsync($"{nameof(CaseDetailsPage)}?id={id}");
     }
 }

@@ -11,8 +11,8 @@ public class CaseDetailsViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private CaseFileDetailsDto? _item;
-    public CaseFileDetailsDto? Item
+    private CaseDetailsModel? _item;
+    public CaseDetailsModel? Item
     {
         get => _item;
         private set { _item = value; OnPropertyChanged(); }
