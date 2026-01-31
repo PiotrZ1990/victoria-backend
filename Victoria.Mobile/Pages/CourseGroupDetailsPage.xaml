@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.CourseGroupDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Group Details">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <Label Text="Group Details" FontSize="24" FontAttributes="Bold" />
+
+        <ActivityIndicator x:Name="Loader" IsRunning="False" IsVisible="False" />
+
+        <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+            <VerticalStackLayout Spacing="8">
+                <Label x:Name="GroupNameLabel" FontAttributes="Bold" FontSize="18" />
+                <Label x:Name="DatesLabel" />
+                <Label x:Name="CapacityLabel" />
+                <Label x:Name="ActiveLabel" />
+                <Label x:Name="CreatedLabel" FontSize="12" TextColor="Gray" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <Label x:Name="ErrorLabel" TextColor="Red" />
+
+    </VerticalStackLayout>
+</ContentPage>

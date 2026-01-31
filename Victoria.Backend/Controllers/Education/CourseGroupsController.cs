@@ -131,4 +131,27 @@ public class CourseGroupsController : ControllerBase
         await _db.SaveChangesAsync();
         return NoContent();
     }
+    // GET: api/coursegroups/by-course/{courseId}
+    [HttpGet("by-course/{courseId:int}")]
+    public async Task<IActionResult> GetByCourse(int courseId)
+    {
+        var list = await _db.CourseGroups
+            .Where(x => x.LanguageCourseId == courseId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new
+            {
+                x.Id,
+                x.LanguageCourseId,
+                x.GroupName,
+                x.StartDate,
+                x.EndDate,
+                x.Capacity,
+                x.IsActive,
+                x.CreatedAt
+            })
+            .ToListAsync();
+
+        return Ok(list);
+    }
+
 }

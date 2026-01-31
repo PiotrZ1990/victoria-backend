@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.CourseDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Course">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Label x:Name="TitleLabel" FontSize="22" FontAttributes="Bold" />
+            <Label x:Name="MetaLabel" FontSize="12" TextColor="Gray" />
+            <Label x:Name="DescLabel" FontSize="14" />
+
+            <Label Text="Groups / Terms" FontAttributes="Bold" FontSize="18" />
+
+            <ActivityIndicator x:Name="Loader" IsRunning="False" IsVisible="False" />
+
+            <CollectionView x:Name="GroupsList"
+                            SelectionMode="Single"
+                            SelectionChanged="OnGroupSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:yyyy-MM-dd}'}" />
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:yyyy-MM-dd}'}" />
+                                <Label Text="{Binding Capacity, StringFormat='Capacity: {0}'}" FontSize="12" TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label x:Name="ErrorLabel" TextColor="Red" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
