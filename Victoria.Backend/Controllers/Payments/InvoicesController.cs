@@ -192,6 +192,26 @@ public class InvoicesController : ControllerBase
 
         return Ok(invoices);
     }
+    // GET: api/invoices/by-case/{caseFileId}
+    [HttpGet("by-case/{caseFileId:int}")]
+    public async Task<IActionResult> GetByCase(int caseFileId)
+    {
+        var list = await _dbContext.Invoices
+            .Where(x => x.CaseFileId == caseFileId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new
+            {
+                x.Id,
+                x.InvoiceNumber,
+                x.IssueDate,
+                x.TotalAmount,
+                x.Currency,
+                Status = x.Status.ToString()
+            })
+            .ToListAsync();
+
+        return Ok(list);
+    }
 
 
     // =========================================

@@ -68,6 +68,10 @@ public partial class CaseDetailsPage : ContentPage
     {
         await Shell.Current.GoToAsync($"case-documents?id={_caseId}");
     }
+    private async void OnInvoicesClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync($"case-invoices?id={_caseId}");
+    }
 
 
 }
