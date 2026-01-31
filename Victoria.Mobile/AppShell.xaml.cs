@@ -17,6 +17,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("case-documents", typeof(CaseDocumentsPage));
         Routing.RegisterRoute("case-invoices", typeof(CaseInvoicesPage));
         Routing.RegisterRoute("invoice-details", typeof(InvoiceDetailsPage));
+        Routing.RegisterRoute("news-details", typeof(NewsDetailsPage));
 
     }
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.NewsDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="News Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Label x:Name="TitleLabel" FontSize="22" FontAttributes="Bold" />
+
+            <Label x:Name="DateLabel" FontSize="12" TextColor="Gray" />
+
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="10">
+                    <Label x:Name="SummaryLabel" FontSize="14" TextColor="Gray" />
+                    <Label x:Name="ContentLabel" FontSize="14" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <ActivityIndicator x:Name="Loader" IsRunning="False" IsVisible="False" />
+            <Label x:Name="ErrorLabel" TextColor="Red" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

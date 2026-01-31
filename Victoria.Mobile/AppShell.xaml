@@ -28,5 +28,10 @@
             Title="My Cases"
             ContentTemplate="{DataTemplate pages:MyCasesPage}" />
 
+        <ShellContent
+            Route="news"
+            Title="News"
+            ContentTemplate="{DataTemplate pages:NewsPage}" />
+
     </FlyoutItem>
 </Shell>
