@@ -26,7 +26,7 @@ public class CaseFilesService
     {
         // lista case'ów (tak jak było wcześniej w projekcie)
         // endpoint ma być taki jak ten, z którego już korzystałeś i działał
-        return await _api.GetJsonAsync<List<CaseDetailsModel>>("api/casefiles");
+        return await _api.GetJsonAsync<List<CaseDetailsModel>>("api/casefiles/my");
     }
 
 

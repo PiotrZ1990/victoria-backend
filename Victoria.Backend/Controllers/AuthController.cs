@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -64,6 +65,43 @@ namespace Victoria.Backend.Controllers
             return Ok(new
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token)
+            });
+        }
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.FullName))
+                return BadRequest("Email, Password and FullName are required.");
+
+            var existing = await _userManager.FindByEmailAsync(request.Email);
+            if (existing != null)
+                return BadRequest("User with this email already exists.");
+
+            var user = new ApplicationUser
+            {
+                UserName = request.Email,
+                Email = request.Email,
+                FullName = request.FullName,
+                EmailConfirmed = true // żeby nie blokowało logowania
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors.Select(e => e.Description).ToList());
+
+            // (opcjonalnie) jeśli masz role, możesz przypisać domyślną:
+            // await _userManager.AddToRoleAsync(user, "Student");
+
+            return Ok(new
+            {
+                userId = user.Id,
+                email = user.Email,
+                fullName = user.FullName
             });
         }
     }

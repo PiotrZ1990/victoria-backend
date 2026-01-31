@@ -19,5 +19,10 @@ namespace Victoria.Domain.Entities.Cases
         public string? InternalNotes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ClientUserId { get; set; } // AspNetUsers.Id (z JWT)
+        public string ClientName { get; set; } = default!;
+        public string Status { get; set; } = "Active";
+
+
     }
 }

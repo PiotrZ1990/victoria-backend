@@ -113,6 +113,9 @@ namespace Victoria.Infrastructure.Data
                 .HasIndex(x => x.CaseNumber)
                 .IsUnique();
 
+            modelBuilder.Entity<CaseFile>()
+                .HasIndex(x => x.ClientUserId);
+
             // =========================
             // STUDY APPLICATION
             // =========================

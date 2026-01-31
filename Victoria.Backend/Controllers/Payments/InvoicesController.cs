@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Victoria.Backend.DTOs.Payments;
 using Victoria.Domain.Entities.Payments;
 using Victoria.Domain.Enums;
@@ -163,6 +164,35 @@ public class InvoicesController : ControllerBase
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyInvoices()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var invoices = await _dbContext.Invoices
+            .Include(i => i.CaseFile)
+            .Where(i => i.CaseFile.ClientUserId == userId)
+            .OrderByDescending(i => i.CreatedAt)
+            .Select(i => new
+            {
+                i.Id,
+                i.CaseFileId,
+                i.InvoiceNumber,
+                i.IssueDate,
+                i.TotalAmount,
+                i.Currency,
+                Status = i.Status.ToString(),
+                i.CreatedAt
+            })
+            .ToListAsync();
+
+        return Ok(invoices);
+    }
+
 
     // =========================================
     // PRIVATE MAPPER

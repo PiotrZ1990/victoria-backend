@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Victoria.Backend.DTOs.Cases;
 using Victoria.Backend.DTOs.Crm;
 using Victoria.Domain.Entities.Cases;
@@ -341,6 +342,29 @@ public class CaseFilesController : ControllerBase
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMyCases()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var list = await _dbContext.CaseFiles
+            .Where(x => x.ClientUserId == userId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new
+            {
+                x.Id,
+                x.Stage,
+                x.CreatedAt
+            })
+            .ToListAsync();
+
+        return Ok(list);
+    }
+
 
     // =========================================
     // PRIVATE MAPPER
