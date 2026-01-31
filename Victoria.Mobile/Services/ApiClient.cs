@@ -78,4 +78,17 @@ public class ApiClient
 
         return body;
     }
+    public async Task<string> PostMultipartAsync(string relativeUrl, MultipartFormDataContent content)
+    {
+        await ApplyAuthAsync();
+
+        var resp = await _http.PostAsync(relativeUrl, content);
+        var body = await resp.Content.ReadAsStringAsync();
+
+        if (!resp.IsSuccessStatusCode)
+            throw new Exception($"API ERROR {(int)resp.StatusCode}: {body}");
+
+        return body;
+    }
+
 }

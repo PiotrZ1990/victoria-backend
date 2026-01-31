@@ -9,7 +9,21 @@
         <Label Text="Documents" FontSize="24" FontAttributes="Bold" />
 
         <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="False" />
+        <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Add document" FontAttributes="Bold" />
 
+                <Entry x:Name="TitleEntry" Placeholder="Title (e.g. Passport)" />
+                <Entry x:Name="DescEntry" Placeholder="Description (optional)" />
+
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="Pick file" Clicked="OnPickFileClicked" />
+                    <Label x:Name="PickedFileLabel" Text="No file selected" VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
+                <Button Text="Upload" Clicked="OnUploadClicked" />
+            </VerticalStackLayout>
+        </Frame>
         <CollectionView x:Name="DocsList"
                         SelectionMode="Single"
                         SelectionChanged="OnSelectionChanged">

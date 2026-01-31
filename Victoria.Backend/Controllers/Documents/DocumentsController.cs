@@ -457,5 +457,120 @@ public class DocumentsController : ControllerBase
 
         return Ok(docs);
     }
+    public class DocumentUploadByCaseRequest
+    {
+        public int CaseFileId { get; set; }
+        public string Title { get; set; } = default!;
+        public string? Description { get; set; }
+        public IFormFile File { get; set; } = default!;
+    }
+
+    [HttpPost("upload-by-case")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(25_000_000)]
+    public async Task<IActionResult> UploadByCase([FromForm] DocumentUploadByCaseRequest req)
+    {
+        if (req.File == null || req.File.Length == 0)
+            return BadRequest("File is required");
+
+        if (string.IsNullOrWhiteSpace(req.Title))
+            return BadRequest("Title is required");
+
+        var caseFile = await _db.CaseFiles.FirstOrDefaultAsync(x => x.Id == req.CaseFileId);
+        if (caseFile == null)
+            return NotFound("CaseFile not found");
+
+        // wybieramy “najbardziej sensowną” aplikację w case:
+        // 1) jeśli jest Visa -> podepnij do Visa
+        // 2) inaczej Study
+        var visaAppId = await _db.VisaApplications
+            .Where(x => x.CaseFileId == req.CaseFileId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync();
+
+        var studyAppId = await _db.StudyApplications
+            .Where(x => x.CaseFileId == req.CaseFileId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync();
+
+        if (!visaAppId.HasValue && !studyAppId.HasValue)
+            return BadRequest("No StudyApplication or VisaApplication exists for this CaseFile.");
+
+        // --- zapis pliku tak jak w Twoim Upload ---
+        var root = _config["FileStorage:UploadRoot"] ?? "uploads";
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), root);
+
+        var subFolder = Path.Combine(DateTime.UtcNow.Year.ToString(), DateTime.UtcNow.Month.ToString("D2"));
+        var targetFolder = Path.Combine(basePath, subFolder);
+
+        if (!Directory.Exists(targetFolder))
+            Directory.CreateDirectory(targetFolder);
+
+        var safeOriginalName = Path.GetFileName(req.File.FileName);
+        var ext = Path.GetExtension(safeOriginalName);
+        var storedFileName = $"{Guid.NewGuid():N}{ext}";
+        var fullPath = Path.Combine(targetFolder, storedFileName);
+
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await req.File.CopyToAsync(stream);
+        }
+
+        var fileResource = new FileResource
+        {
+            FileName = safeOriginalName,
+            ContentType = req.File.ContentType ?? "application/octet-stream",
+            FileSize = req.File.Length,
+            FilePath = Path.Combine(root, subFolder, storedFileName).Replace("\\", "/"),
+            UploadedAt = DateTime.UtcNow
+        };
+
+        _db.FileResources.Add(fileResource);
+        await _db.SaveChangesAsync();
+
+        var document = new Document
+        {
+            DocumentType = req.Title,
+            Description = req.Description,
+            FileResourceId = fileResource.Id,
+            Status = Domain.Enums.DocumentStatus.Uploaded,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.Documents.Add(document);
+        await _db.SaveChangesAsync();
+
+        // --- podpinanie ---
+        if (visaAppId.HasValue)
+        {
+            _db.VisaDocuments.Add(new VisaDocument
+            {
+                VisaApplicationId = visaAppId.Value,
+                DocumentId = document.Id
+            });
+        }
+        else
+        {
+            _db.ApplicationDocuments.Add(new ApplicationDocument
+            {
+                StudyApplicationId = studyAppId!.Value,
+                DocumentId = document.Id
+            });
+        }
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            documentId = document.Id,
+            fileResourceId = fileResource.Id,
+            title = document.DocumentType,
+            fileName = fileResource.FileName,
+            filePath = fileResource.FilePath,
+            createdAt = document.CreatedAt
+        });
+    }
 
 }

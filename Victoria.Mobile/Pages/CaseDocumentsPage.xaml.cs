@@ -9,6 +9,7 @@ public partial class CaseDocumentsPage : ContentPage
 {
     private readonly DocumentsService _service;
     private int _caseId;
+    private string? _pickedPath;
 
     public string CaseId
     {
@@ -69,4 +70,67 @@ public partial class CaseDocumentsPage : ContentPage
 
         await Launcher.Default.OpenAsync(url);
     }
+    private async void OnPickFileClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Pick a document"
+            });
+
+            if (result == null) return;
+
+            _pickedPath = result.FullPath;
+            PickedFileLabel.Text = Path.GetFileName(_pickedPath);
+        }
+        catch (Exception ex)
+        {
+            ErrorLabel.Text = ex.Message;
+        }
+    }
+
+    private async void OnUploadClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            ErrorLabel.Text = "";
+
+            if (string.IsNullOrWhiteSpace(_pickedPath))
+            {
+                ErrorLabel.Text = "Pick a file first.";
+                return;
+            }
+
+            var title = TitleEntry.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                ErrorLabel.Text = "Title is required.";
+                return;
+            }
+
+            Loader.IsVisible = true;
+            Loader.IsRunning = true;
+
+            await _service.UploadForCaseAsync(_caseId, title!, DescEntry.Text, _pickedPath);
+
+            // reset
+            _pickedPath = null;
+            PickedFileLabel.Text = "No file selected";
+            TitleEntry.Text = "";
+            DescEntry.Text = "";
+
+            await LoadAsync(); // reload list
+        }
+        catch (Exception ex)
+        {
+            ErrorLabel.Text = ex.Message;
+        }
+        finally
+        {
+            Loader.IsRunning = false;
+            Loader.IsVisible = false;
+        }
+    }
+
 }
