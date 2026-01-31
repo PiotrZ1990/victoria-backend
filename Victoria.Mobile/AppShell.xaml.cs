@@ -14,6 +14,8 @@ public partial class AppShell : Shell
 
         // Route do szczegółów (zakładam, że masz tę stronę)
         Routing.RegisterRoute("case-details", typeof(CaseDetailsPage));
+        Routing.RegisterRoute("case-documents", typeof(CaseDocumentsPage));
+
     }
 
     protected override async void OnAppearing()

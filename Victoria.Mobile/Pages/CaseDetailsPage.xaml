@@ -26,7 +26,7 @@
             <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Next actions" FontAttributes="Bold" />
-                    <Button Text="Documents (next)" IsEnabled="False" />
+                    <Button Text="Documents" Clicked="OnDocumentsClicked" />
                     <Button Text="Invoices (next)" IsEnabled="False" />
                 </VerticalStackLayout>
             </Frame>

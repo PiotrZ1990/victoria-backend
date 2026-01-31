@@ -1,12 +1,13 @@
+using Victoria.Mobile.Helpers;
 using Victoria.Mobile.Models;
 using Victoria.Mobile.Services;
 
 namespace Victoria.Mobile.Pages;
 
 [QueryProperty(nameof(CaseId), "id")]
-public partial class CaseDetailsPage : ContentPage
+public partial class CaseDocumentsPage : ContentPage
 {
-    private readonly CaseFilesService _service;
+    private readonly DocumentsService _service;
     private int _caseId;
 
     public string CaseId
@@ -14,18 +15,15 @@ public partial class CaseDetailsPage : ContentPage
         set
         {
             if (int.TryParse(value, out var id))
-            {
                 _caseId = id;
-            }
         }
     }
 
-    public CaseDetailsPage()
+    public CaseDocumentsPage()
     {
         InitializeComponent();
-
         var api = new ApiClient();
-        _service = new CaseFilesService(api);
+        _service = new DocumentsService(api);
     }
 
     protected override async void OnAppearing()
@@ -42,8 +40,8 @@ public partial class CaseDetailsPage : ContentPage
             Loader.IsVisible = true;
             Loader.IsRunning = true;
 
-            var dto = await _service.GetByIdAsync(_caseId);
-            Render(dto);
+            var list = await _service.GetForCaseAsync(_caseId);
+            DocsList.ItemsSource = list;
         }
         catch (Exception ex)
         {
@@ -56,18 +54,19 @@ public partial class CaseDetailsPage : ContentPage
         }
     }
 
-    private void Render(CaseDetailsModel m)
+    private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        ClientNameLabel.Text = string.IsNullOrWhiteSpace(m.ClientName) ? "(no client name)" : m.ClientName;
-        StageLabel.Text = $"Stage: {(string.IsNullOrWhiteSpace(m.Stage) ? "-" : m.Stage)}";
-        StatusLabel.Text = $"Status: {(string.IsNullOrWhiteSpace(m.Status) ? "-" : m.Status)}";
-        CreatedAtLabel.Text = $"Created: {m.CreatedAt:yyyy-MM-dd HH:mm}";
-        CaseIdLabel.Text = $"Case ID: {m.Id}";
-    }
-    private async void OnDocumentsClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync($"case-documents?id={_caseId}");
-    }
+        var selected = e.CurrentSelection?.FirstOrDefault();
+        if (selected == null) return;
 
+        var doc = (CaseDocumentModel)selected;
+        ((CollectionView)sender).SelectedItem = null;
 
+        // otwieramy link do pliku w przegl¹darce/systemowym viewerze
+        var baseUrl = AppConfig.BaseUrl.TrimEnd('/');
+        var path = doc.File.FilePath?.TrimStart('/') ?? "";
+        var url = $"{baseUrl}/{path}";
+
+        await Launcher.Default.OpenAsync(url);
+    }
 }

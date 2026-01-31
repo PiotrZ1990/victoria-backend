@@ -406,5 +406,56 @@ public class DocumentsController : ControllerBase
         return Ok(docs);
     }
 
+    // =========================================
+    // LIST DOCUMENTS FOR CASEFILE
+    // GET: api/documents/case/{caseFileId}
+    // =========================================
+    [HttpGet("case/{caseFileId:int}")]
+    public async Task<IActionResult> GetForCase(int caseFileId)
+    {
+        var exists = await _db.CaseFiles.AnyAsync(x => x.Id == caseFileId);
+        if (!exists) return NotFound("CaseFile not found");
+
+        // Dokumenty podpięte przez StudyApplication i VisaApplication dla tego CaseFile
+        var studyDocIds = await _db.StudyApplications
+            .Where(x => x.CaseFileId == caseFileId)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        var visaDocIds = await _db.VisaApplications
+            .Where(x => x.CaseFileId == caseFileId)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        var docs = await _db.Documents
+            .Include(d => d.FileResource)
+            .Where(d =>
+                _db.ApplicationDocuments.Any(ad =>
+                    ad.DocumentId == d.Id && studyDocIds.Contains(ad.StudyApplicationId))
+                ||
+                _db.VisaDocuments.Any(vd =>
+                    vd.DocumentId == d.Id && visaDocIds.Contains(vd.VisaApplicationId))
+            )
+            .OrderByDescending(d => d.CreatedAt)
+            .Select(d => new
+            {
+                d.Id,
+                Title = d.DocumentType,
+                d.Description,
+                Status = d.Status.ToString(),
+                d.CreatedAt,
+                File = new
+                {
+                    d.FileResourceId,
+                    d.FileResource.FileName,
+                    d.FileResource.ContentType,
+                    d.FileResource.FileSize,
+                    d.FileResource.FilePath
+                }
+            })
+            .ToListAsync();
+
+        return Ok(docs);
+    }
 
 }
