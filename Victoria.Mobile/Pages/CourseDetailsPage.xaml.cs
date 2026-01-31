@@ -1,35 +1,45 @@
-using Victoria.Mobile.Models;
-using Victoria.Mobile.Services;
+﻿using Victoria.Mobile.Services;
 
 namespace Victoria.Mobile.Pages;
 
 [QueryProperty(nameof(CourseId), "id")]
 public partial class CourseDetailsPage : ContentPage
 {
-    private int _id;
     private readonly LanguageCoursesService _courses;
     private readonly CourseGroupsService _groups;
+    private readonly EnrollmentsService _enrollments;
+
+    private int _courseId;
 
     public string CourseId
     {
         set
         {
-            if (int.TryParse(value, out var id))
-                _id = id;
+            if (int.TryParse(value, out var parsed))
+                _courseId = parsed;
         }
     }
 
     public CourseDetailsPage()
     {
         InitializeComponent();
+
         var api = new ApiClient();
         _courses = new LanguageCoursesService(api);
         _groups = new CourseGroupsService(api);
+        _enrollments = new EnrollmentsService(api);
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        if (_courseId <= 0)
+        {
+            ErrorLabel.Text = "Missing course id.";
+            return;
+        }
+
         await LoadAsync();
     }
 
@@ -41,12 +51,13 @@ public partial class CourseDetailsPage : ContentPage
             Loader.IsVisible = true;
             Loader.IsRunning = true;
 
-            var course = await _courses.GetByIdAsync(_id);
+            var course = await _courses.GetByIdAsync(_courseId);
+
             TitleLabel.Text = course.Name;
             MetaLabel.Text = $"Level: {course.Level ?? "-"} | Price: {course.Price:0.00} {course.Currency}";
             DescLabel.Text = course.Description ?? "";
 
-            var list = await _groups.GetByCourseAsync(_id);
+            var list = await _groups.GetByCourseAsync(_courseId);
             GroupsList.ItemsSource = list;
         }
         catch (Exception ex)
@@ -60,13 +71,24 @@ public partial class CourseDetailsPage : ContentPage
         }
     }
 
-    private async void OnGroupSelected(object sender, SelectionChangedEventArgs e)
+    private async void OnEnrollClicked(object sender, EventArgs e)
     {
-        var selected = e.CurrentSelection?.FirstOrDefault() as CourseGroupListModel;
-        if (selected == null) return;
+        try
+        {
+            var btn = (Button)sender;
 
-        ((CollectionView)sender).SelectedItem = null;
+            if (btn.CommandParameter == null)
+                throw new Exception("Missing group id.");
 
-        await Shell.Current.GoToAsync($"group-details?id={selected.Id}");
+            var groupId = Convert.ToInt32(btn.CommandParameter);
+
+            await _enrollments.EnrollMyAsync(groupId);
+
+            await DisplayAlert("OK", "You are enrolled ✅", "Close");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "Close");
+        }
     }
 }

@@ -36,8 +36,12 @@
         <ShellContent
             Route="courses"
             Title="Courses"
-            ContentTemplate="{DataTemplate pages:CoursesPage}" />       
+            ContentTemplate="{DataTemplate pages:CoursesPage}" />
 
+        <ShellContent
+            Route="myenrollments"
+            Title="My Enrollments"
+            ContentTemplate="{DataTemplate pages:MyEnrollmentsPage}" /> 
 
     </FlyoutItem>
 </Shell>

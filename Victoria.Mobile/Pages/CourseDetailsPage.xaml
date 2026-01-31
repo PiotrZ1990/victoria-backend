@@ -27,6 +27,10 @@
                                 <Label Text="{Binding StartDate, StringFormat='Start: {0:yyyy-MM-dd}'}" />
                                 <Label Text="{Binding EndDate, StringFormat='End: {0:yyyy-MM-dd}'}" />
                                 <Label Text="{Binding Capacity, StringFormat='Capacity: {0}'}" FontSize="12" TextColor="Gray" />
+                                <Button Text="Enroll"
+                                    Clicked="OnEnrollClicked"
+                                    CommandParameter="{Binding Id}" />
+
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
