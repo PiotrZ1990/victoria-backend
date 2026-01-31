@@ -65,7 +65,7 @@ public partial class CaseInvoicesPage : ContentPage
 
         ((CollectionView)sender).SelectedItem = null;
 
-        // na razie tylko poka¿emy alert - details zrobimy w nastêpnym kroku
-        await DisplayAlert("Invoice", $"InvoiceId: {selected.Id}\n{selected.InvoiceNumber}", "OK");
+        await Shell.Current.GoToAsync($"invoice-details?id={selected.Id}");
     }
 }
+

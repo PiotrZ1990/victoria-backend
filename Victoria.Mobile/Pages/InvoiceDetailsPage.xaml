@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.InvoiceDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Invoice">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <Label Text="Invoice" FontSize="24" FontAttributes="Bold" />
+
+        <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="False" />
+
+        <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+            <VerticalStackLayout Spacing="6">
+                <Label x:Name="InvoiceNumberLabel" FontSize="18" FontAttributes="Bold" />
+                <Label x:Name="IssueDateLabel" />
+                <Label x:Name="TotalLabel" />
+                <Label x:Name="StatusLabel" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <Button Text="Download DOCX" Clicked="OnDownloadDocxClicked" />
+
+        <Label x:Name="ResultLabel" TextColor="Green" />
+        <Label x:Name="ErrorLabel" TextColor="Red" />
+
+    </VerticalStackLayout>
+</ContentPage>

@@ -90,5 +90,20 @@ public class ApiClient
 
         return body;
     }
+    public async Task<byte[]> GetBytesAsync(string relativeUrl)
+    {
+        await ApplyAuthAsync();
+
+        var resp = await _http.GetAsync(relativeUrl);
+        var bytes = await resp.Content.ReadAsByteArrayAsync();
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            var body = await resp.Content.ReadAsStringAsync();
+            throw new Exception($"API ERROR {(int)resp.StatusCode}: {body}");
+        }
+
+        return bytes;
+    }
 
 }
