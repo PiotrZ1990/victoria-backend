@@ -1,3 +1,4 @@
+using Victoria.Mobile.Models;
 using Victoria.Mobile.Services;
 using Victoria.Mobile.ViewModels;
 
@@ -37,12 +38,13 @@ public partial class MyCasesPage : ContentPage
         var selected = e.CurrentSelection?.FirstOrDefault();
         if (selected == null) return;
 
-        // u Ciebie element listy ma Id
-        dynamic item = selected;
-        int id = (int)item.Id;
+        // To MUSI byæ model listy (Id itp.)
+        var item = (CaseDetailsModel)selected;
+        var id = item.Id;
 
         ((CollectionView)sender).SelectedItem = null;
 
-        await Shell.Current.GoToAsync($"{nameof(CaseDetailsPage)}?id={id}");
+        // ? route z AppShell.xaml.cs: Routing.RegisterRoute("case-details", typeof(CaseDetailsPage));
+        await Shell.Current.GoToAsync($"case-details?id={id}");
     }
 }

@@ -12,8 +12,8 @@
         <Button Text="Refresh" Clicked="OnRefreshClicked" />
 
         <CollectionView x:Name="CasesList"
-                        SelectionMode="Single"
-                        SelectionChanged="OnSelectionChanged">
+                SelectionMode="Single"
+                SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
@@ -25,9 +25,9 @@
                                 <Label Text="{Binding Status}" />
                             </HorizontalStackLayout>
                             <Label Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}"
-                                   FontSize="12" TextColor="Gray" />
+                           FontSize="12" TextColor="Gray" />
                             <Label Text="{Binding Id, StringFormat='Case ID: {0}'}"
-                                   FontSize="12" TextColor="Gray" />
+                           FontSize="12" TextColor="Gray" />
                         </VerticalStackLayout>
                     </Frame>
                 </DataTemplate>
