@@ -19,7 +19,7 @@
                     <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
                         <VerticalStackLayout Spacing="6">
                             <Label Text="{Binding ClientName}" FontAttributes="Bold" FontSize="16" />
-                            <Label Text="{Binding Stage}" FontSize="14" />
+                            <Label Text="{Binding Stage, StringFormat='Stage: {0}'}" />
                             <HorizontalStackLayout Spacing="10">
                                 <Label Text="Status:" FontAttributes="Bold" />
                                 <Label Text="{Binding Status}" />

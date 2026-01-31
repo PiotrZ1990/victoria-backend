@@ -59,9 +59,10 @@ public partial class CaseDetailsPage : ContentPage
     private void Render(CaseDetailsModel m)
     {
         ClientNameLabel.Text = string.IsNullOrWhiteSpace(m.ClientName) ? "(no client name)" : m.ClientName;
-        StageLabel.Text = $"Stage: {m.Stage ?? "-"}";
-        StatusLabel.Text = $"Status: {m.Status ?? "-"}";
+        StageLabel.Text = $"Stage: {(string.IsNullOrWhiteSpace(m.Stage) ? "-" : m.Stage)}";
+        StatusLabel.Text = $"Status: {(string.IsNullOrWhiteSpace(m.Status) ? "-" : m.Status)}";
         CreatedAtLabel.Text = $"Created: {m.CreatedAt:yyyy-MM-dd HH:mm}";
         CaseIdLabel.Text = $"Case ID: {m.Id}";
     }
+
 }
