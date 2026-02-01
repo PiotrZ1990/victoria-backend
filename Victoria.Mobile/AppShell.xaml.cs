@@ -34,9 +34,15 @@ public partial class AppShell : Shell
         SetLoggedInUI(!string.IsNullOrWhiteSpace(token));
 
         if (string.IsNullOrWhiteSpace(token))
-            await GoToAsync("//login");
+        {
+            SetLoggedInUI(false);
+            await GoToAsync("//public/home");
+        }
         else
+        {
+            SetLoggedInUI(true);
             await GoToAsync("//app/home");
+        }
     }
 
     public async Task SetLoggedInAsync(bool isLoggedIn)

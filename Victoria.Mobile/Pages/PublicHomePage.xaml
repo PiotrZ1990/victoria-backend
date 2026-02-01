@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.PublicHomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Victoria">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <Label Text="Victoria"
+                   FontSize="30"
+                   FontAttributes="Bold" />
+
+            <Label Text="Welcome! Explore our services and apply in a minute."
+                   FontSize="14"
+                   TextColor="Gray" />
+
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="14">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="What you can do here:" FontAttributes="Bold" />
+                    <Label Text="• Browse courses" />
+                    <Label Text="• Read news updates" />
+                    <Label Text="• Apply without account" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Browse Courses" Clicked="OnCoursesClicked" />
+            <Button Text="News" Clicked="OnNewsClicked" />
+            <Button Text="Apply (no account)" Clicked="OnApplyClicked" />
+
+            <Label Text="Already have an account?" TextColor="Gray" />
+            <Button Text="Login" Clicked="OnLoginClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
