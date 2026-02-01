@@ -10,6 +10,8 @@ public partial class CaseDocumentsPage : ContentPage
     private readonly DocumentsService _service;
     private int _caseId;
     private string? _pickedPath;
+    private readonly ChecklistService _checklists;
+
 
     public string CaseId
     {
@@ -25,6 +27,8 @@ public partial class CaseDocumentsPage : ContentPage
         InitializeComponent();
         var api = new ApiClient();
         _service = new DocumentsService(api);
+        _checklists = new ChecklistService(api);
+
     }
 
     protected override async void OnAppearing()
@@ -53,6 +57,13 @@ public partial class CaseDocumentsPage : ContentPage
             Loader.IsRunning = false;
             Loader.IsVisible = false;
         }
+        var checklist = await _checklists.GetMyChecklistAsync(_caseId);
+        ChecklistList.ItemsSource = checklist.Items
+            .OrderBy(x => x.Flow)
+            .ThenByDescending(x => x.IsRequired)
+            .ThenBy(x => x.DocumentType)
+            .ToList();
+
     }
 
     private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)

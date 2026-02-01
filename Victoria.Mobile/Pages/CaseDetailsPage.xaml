@@ -27,6 +27,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Next actions" FontAttributes="Bold" />
                     <Button Text="Documents" Clicked="OnDocumentsClicked" />
+                    
                     <Button Text="Invoices" Clicked="OnInvoicesClicked" />
                 </VerticalStackLayout>
             </Frame>

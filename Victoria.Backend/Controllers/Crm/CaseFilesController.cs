@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Victoria.Backend.DTOs.Cases;
 using Victoria.Backend.DTOs.Crm;
+using Victoria.Backend.DTOs.Documents;
 using Victoria.Domain.Entities.Cases;
 using Victoria.Domain.Enums;
 using Victoria.Infrastructure.Data;
@@ -382,4 +383,76 @@ public class CaseFilesController : ControllerBase
             CreatedAt = caseFile.CreatedAt
         };
     }
+    [Authorize]
+    [HttpGet("my/{caseFileId:int}/checklist")]
+    public async Task<IActionResult> GetMyChecklist(int caseFileId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        // 1) upewnij się że to moja sprawa
+        var caseFile = await _dbContext.CaseFiles.FirstOrDefaultAsync(x => x.Id == caseFileId);
+        if (caseFile == null) return NotFound("CaseFile not found");
+
+        if (caseFile.ClientUserId != userId)
+            return Forbid();
+
+        // 2) znajdź powiązane aplikacje (potrzebne do uploadu)
+        var studyAppId = await _dbContext.StudyApplications
+            .Where(x => x.CaseFileId == caseFileId)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync();
+
+        var visaAppId = await _dbContext.VisaApplications
+            .Where(x => x.CaseFileId == caseFileId)
+            .Select(x => (int?)x.Id)
+            .FirstOrDefaultAsync();
+
+        // 3) pobierz checklist items (Application + Visa)
+        var appItems = await _dbContext.CaseApplicationChecklistItems
+            .Where(x => x.CaseFileId == caseFileId)
+            .Include(x => x.Checklist)
+            .OrderBy(x => x.ChecklistId)
+            .Select(x => new ChecklistItemMobileDto
+            {
+                Flow = "Application",
+                ItemId = x.Id,
+                ChecklistId = x.ChecklistId,
+                DocumentType = x.Checklist.DocumentType,
+                IsRequired = x.Checklist.IsRequired,
+                IsCompleted = x.IsCompleted,
+                DocumentId = x.DocumentId,
+                UpdatedAt = x.UpdatedAt
+            })
+            .ToListAsync();
+
+        var visaItems = await _dbContext.CaseVisaChecklistItems
+            .Where(x => x.CaseFileId == caseFileId)
+            .Include(x => x.Checklist)
+            .OrderBy(x => x.ChecklistId)
+            .Select(x => new ChecklistItemMobileDto
+            {
+                Flow = "Visa",
+                ItemId = x.Id,
+                ChecklistId = x.ChecklistId,
+                DocumentType = x.Checklist.DocumentType,
+                IsRequired = x.Checklist.IsRequired,
+                IsCompleted = x.IsCompleted,
+                DocumentId = x.DocumentId,
+                UpdatedAt = x.UpdatedAt
+            })
+            .ToListAsync();
+
+        var dto = new CaseChecklistMobileDto
+        {
+            CaseFileId = caseFileId,
+            StudyApplicationId = studyAppId,
+            VisaApplicationId = visaAppId,
+            Items = appItems.Concat(visaItems).ToList()
+        };
+
+        return Ok(dto);
+    }
+
 }

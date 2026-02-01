@@ -24,6 +24,31 @@
                 <Button Text="Upload" Clicked="OnUploadClicked" />
             </VerticalStackLayout>
         </Frame>
+        <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Required documents (checklist)" FontAttributes="Bold" />
+
+                <CollectionView x:Name="ChecklistList" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BorderColor="#eee" CornerRadius="10" Padding="10" Margin="0,0,0,8">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding DocumentType}" FontAttributes="Bold" />
+
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label Text="{Binding Flow, StringFormat='Flow: {0}'}" FontSize="12" TextColor="Gray"/>
+                                        <Label Text="{Binding IsRequired, StringFormat='Required: {0}'}" FontSize="12" TextColor="Gray"/>
+                                    </HorizontalStackLayout>
+
+                                    <Label Text="{Binding IsCompleted, StringFormat='Completed: {0}'}" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Frame>
+
         <CollectionView x:Name="DocsList"
                         SelectionMode="Single"
                         SelectionChanged="OnSelectionChanged">
