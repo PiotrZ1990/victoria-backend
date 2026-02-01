@@ -23,7 +23,10 @@
 
         <Button Text="Login"
                 Clicked="OnLoginClicked" />
-
+        <Button Text="Apply (no account)"
+                Clicked="OnApplyClicked"
+                BackgroundColor="#eee"
+                TextColor="#000"/>
         <Button Text="Clear token (debug)"
                 Clicked="OnClearTokenClicked"
                 BackgroundColor="#eee"

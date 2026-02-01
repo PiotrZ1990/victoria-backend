@@ -10,6 +10,11 @@
     <ShellContent
         Route="login"
         ContentTemplate="{DataTemplate pages:LoginPage}" />
+    <ShellContent
+        Route="apply"
+        Title="Apply"
+        ContentTemplate="{DataTemplate pages:ApplyPage}" />
+
 
     <!-- APP (po zalogowaniu, z menu) -->
     <FlyoutItem x:Name="AppFlyout"

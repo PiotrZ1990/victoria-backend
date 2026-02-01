@@ -39,4 +39,9 @@ public partial class LoginPage : ContentPage
         TokenStore.Clear();
         StatusLabel.Text = "Token cleared.";
     }
+    private async void OnApplyClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//apply");
+    }
+
 }

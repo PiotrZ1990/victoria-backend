@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.ApplyPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Apply">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+
+            <Label Text="Apply / Contact"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Label Text="Send your details – our team will contact you."
+                   FontSize="14"
+                   TextColor="Gray" />
+
+            <Entry x:Name="FullNameEntry" Placeholder="Full name *" />
+            <Entry x:Name="EmailEntry" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="PhoneEntry" Placeholder="Phone number" Keyboard="Telephone" />
+
+            <Picker x:Name="CountryPicker" Title="Interested country">
+                <Picker.Items>
+                    <x:String>UK</x:String>
+                    <x:String>Poland</x:String>
+                    <x:String>Germany</x:String>
+                    <x:String>Other</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Picker x:Name="ServicePicker" Title="Interested service">
+                <Picker.Items>
+                    <x:String>Study</x:String>
+                    <x:String>Visa</x:String>
+                    <x:String>Language Course</x:String>
+                    <x:String>Other</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Button Text="Send application"
+                    Clicked="OnSendClicked"
+                    FontAttributes="Bold" />
+
+            <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="False"/>
+
+            <Label x:Name="StatusLabel" TextColor="Red" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
