@@ -334,4 +334,87 @@ public class LeadsController : Controller
         }
     }
 
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> CreateClientAccount(int id)
+{
+    try
+    {
+        var client = CreateApiClientWithJwt();
+             // jak u Ciebie zawsze: JWT z sesji + HttpClientFactory
+
+        var resp = await client.PostAsync($"api/leads/{id}/create-client-account", null);
+        var body = await resp.Content.ReadAsStringAsync();
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            TempData["Error"] = $"Create client account failed: {body}";
+            return RedirectToAction("Details", new { id });
+        }
+
+        var dto = JsonSerializer.Deserialize<LeadClientAccountResponse>(
+            body,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+
+        if (dto == null || string.IsNullOrWhiteSpace(dto.UserId))
+        {
+            TempData["Error"] = "Create account OK, but response is invalid (missing userId).";
+            return RedirectToAction("Details", new { id });
+        }
+
+        // pokażemy na ekranie login + hasło tymczasowe (na obronę wystarczy)
+        TempData["Success"] = $"Client account created ✅ Login: {dto.Login} | Temp password: {dto.TempPassword}";
+
+        // ZAPAMIĘTAJ userId, żeby dało się od razu przypiąć do sprawy bez ręcznego kopiowania
+        TempData["CreatedUserId"] = dto.UserId;
+
+        return RedirectToAction("Details", new { id });
+    }
+    catch (UnauthorizedAccessException)
+    {
+        return RedirectToAction("Login", "Auth");
+    }
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> AttachUserToCase(int id)
+{
+    try
+    {
+            var client = CreateApiClientWithJwt();
+
+            // bierzemy userId z TempData (po utworzeniu konta)
+            var userId = TempData["CreatedUserId"]?.ToString();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            TempData["Error"] = "Missing userId to attach. Create client account first (or implement manual input).";
+            return RedirectToAction("Details", new { id });
+        }
+
+        // backend oczekuje body jako string => wysyłamy JSON string: "xxx"
+        var json = JsonSerializer.Serialize(userId);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var resp = await client.PostAsync($"api/leads/{id}/attach-user-to-case", content);
+        var body = await resp.Content.ReadAsStringAsync();
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            TempData["Error"] = $"Attach user to case failed: {body}";
+            return RedirectToAction("Details", new { id });
+        }
+
+        TempData["Success"] = "User attached to CaseFile ✅";
+        return RedirectToAction("Details", new { id });
+    }
+    catch (UnauthorizedAccessException)
+    {
+        return RedirectToAction("Login", "Auth");
+    }
+}
+
 }

@@ -159,8 +159,7 @@ public class LeadsController : ControllerBase
     // POST: api/leads/{leadId}/create-client-account
     // =========================
     [HttpPost("{leadId:int}/create-client-account")]
-  
-
+    //[Authorize(Roles = "Staff,Admin")]
     public async Task<IActionResult> CreateClientAccount(int leadId)
     {
         var lead = await _dbContext.Leads.FirstOrDefaultAsync(x => x.Id == leadId);

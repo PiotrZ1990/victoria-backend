@@ -45,5 +45,19 @@
                 <button class="btn btn-success">Convert → CaseFile</button>
             </form>
         }
+
+        @if (Model.Status == "Converted")
+        {
+            <form method="post" asp-controller="Leads" asp-action="CreateClientAccount" asp-route-id="@Model.Id">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary">Create client account</button>
+            </form>
+
+            <form method="post" asp-controller="Leads" asp-action="AttachUserToCase" asp-route-id="@Model.Id" class="mt-2">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-success">Attach user → case</button>
+            </form>
+
+        }
     </div>
 </div>

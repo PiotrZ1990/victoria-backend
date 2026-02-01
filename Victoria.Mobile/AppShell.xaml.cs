@@ -1,5 +1,4 @@
-﻿using Victoria.Mobile.Helpers;
-using Victoria.Mobile.Pages;
+﻿using Victoria.Mobile.Pages;
 using Victoria.Mobile.Services;
 
 namespace Victoria.Mobile;
@@ -12,7 +11,6 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        // Route do szczegółów (zakładam, że masz tę stronę)
         Routing.RegisterRoute("case-details", typeof(CaseDetailsPage));
         Routing.RegisterRoute("case-documents", typeof(CaseDocumentsPage));
         Routing.RegisterRoute("case-invoices", typeof(CaseInvoicesPage));
