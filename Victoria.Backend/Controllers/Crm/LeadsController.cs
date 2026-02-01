@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Victoria.Backend.DTOs.Crm;
 using Victoria.Domain.Entities.CRM;
 using Victoria.Infrastructure.Data;
+using Victoria.Infrastructure.Identity;
 
 namespace Victoria.Backend.Controllers.Crm;
 
@@ -12,10 +14,13 @@ namespace Victoria.Backend.Controllers.Crm;
 public class LeadsController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public LeadsController(AppDbContext dbContext)
+
+    public LeadsController(AppDbContext dbContext, UserManager<ApplicationUser> userManager)
     {
         _dbContext = dbContext;
+        _userManager = userManager;
     }
 
     // =========================
@@ -149,4 +154,70 @@ public class LeadsController : ControllerBase
             CreatedAt = lead.CreatedAt
         };
     }
+    // =========================
+    // CREATE CLIENT ACCOUNT FOR LEAD (STAFF, ADMIN)
+    // POST: api/leads/{leadId}/create-client-account
+    // =========================
+    [HttpPost("{leadId:int}/create-client-account")]
+  
+
+    public async Task<IActionResult> CreateClientAccount(int leadId)
+    {
+        var lead = await _dbContext.Leads.FirstOrDefaultAsync(x => x.Id == leadId);
+        if (lead == null) return NotFound("Lead not found");
+
+        if (string.IsNullOrWhiteSpace(lead.Email))
+            return BadRequest("Lead has no email. Cannot create account.");
+
+        var email = lead.Email.Trim();
+
+        var existing = await _userManager.FindByEmailAsync(email);
+        if (existing != null)
+            return BadRequest("User with this email already exists.");
+
+        var tempPassword = "Temp#" + Guid.NewGuid().ToString("N")[..8] + "a!";
+
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true,
+            FullName = lead.FullName.Trim()
+        };
+
+        var res = await _userManager.CreateAsync(user, tempPassword);
+        if (!res.Succeeded)
+            return BadRequest(string.Join(" | ", res.Errors.Select(e => e.Description)));
+
+        return Ok(new
+        {
+            userId = user.Id,
+            login = email,
+            tempPassword
+        });
+    }
+    // =========================
+    // ATTACH CLIENT USER TO CASEFILE BY LEAD
+    // POST: api/leads/{leadId}/attach-user-to-case
+    // =========================
+    [HttpPost("{leadId:int}/attach-user-to-case")]
+    //[Authorize(Roles = "Staff,Admin")]
+    public async Task<IActionResult> AttachUserToCase(int leadId, [FromBody] string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return BadRequest("userId required");
+
+        var caseFile = await _dbContext.CaseFiles.FirstOrDefaultAsync(x => x.LeadId == leadId);
+        if (caseFile == null) return NotFound("CaseFile for this lead not found");
+
+        caseFile.ClientUserId = userId;
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            caseFileId = caseFile.Id,
+            caseFile.ClientUserId
+        });
+    }
+
 }

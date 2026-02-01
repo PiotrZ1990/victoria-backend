@@ -43,6 +43,7 @@ public class CaseFilesController : ControllerBase
 
         var caseFile = new CaseFile
         {
+            ClientName = lead.FullName,
             LeadId = lead.Id,
             CaseNumber = $"CASE-{DateTime.UtcNow:yyyyMMddHHmmss}",
             Stage = CaseStage.New,
