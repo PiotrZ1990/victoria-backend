@@ -105,5 +105,14 @@ public class ApiClient
 
         return bytes;
     }
+    public async Task DeleteAsync(string relativeUrl)
+    {
+        await ApplyAuthAsync();
 
+        var resp = await _http.DeleteAsync(relativeUrl);
+        var body = await resp.Content.ReadAsStringAsync();
+
+        if (!resp.IsSuccessStatusCode)
+            throw new Exception($"API ERROR {(int)resp.StatusCode}: {body}");
+    }
 }

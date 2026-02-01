@@ -24,4 +24,6 @@ public class EnrollmentsService
         var payload = JsonSerializer.Serialize(new { courseGroupId });
         _ = await _api.PostJsonAsync("api/enrollments/my", payload);
     }
+    public Task UnenrollMyAsync(int enrollmentId)
+       => _api.DeleteAsync($"api/enrollments/my/{enrollmentId}");
 }

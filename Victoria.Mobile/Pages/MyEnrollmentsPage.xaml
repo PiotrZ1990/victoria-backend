@@ -6,21 +6,32 @@
     Title="My Enrollments">
 
     <VerticalStackLayout Padding="16" Spacing="12">
+
         <Label Text="My Enrollments" FontSize="24" FontAttributes="Bold" />
 
         <Button Text="Refresh" Clicked="OnRefreshClicked" />
+
+        <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="False" />
 
         <CollectionView x:Name="EnrollmentsList" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="{Binding CourseName}" FontAttributes="Bold" FontSize="16" />
+
+                            <Label Text="{Binding CourseName}" FontSize="16" FontAttributes="Bold" />
                             <Label Text="{Binding GroupName, StringFormat='Group: {0}'}" />
-                            <Label Text="{Binding Location, StringFormat='Location: {0}'}" />
+
                             <Label Text="{Binding StartDate, StringFormat='Start: {0:yyyy-MM-dd}'}" FontSize="12" TextColor="Gray" />
                             <Label Text="{Binding EndDate, StringFormat='End: {0:yyyy-MM-dd}'}" FontSize="12" TextColor="Gray" />
+                            <Label Text="{Binding Location, StringFormat='Location: {0}'}" FontSize="12" TextColor="Gray" />
+
                             <Label Text="{Binding CreatedAt, StringFormat='Enrolled: {0:yyyy-MM-dd HH:mm}'}" FontSize="12" TextColor="Gray" />
+
+                            <Button Text="Unenroll"
+                                Clicked="OnUnenrollClicked"
+                                BackgroundColor="#ffdddd"
+                                TextColor="#000" />
                         </VerticalStackLayout>
                     </Frame>
                 </DataTemplate>
@@ -28,5 +39,6 @@
         </CollectionView>
 
         <Label x:Name="ErrorLabel" TextColor="Red" />
+
     </VerticalStackLayout>
 </ContentPage>

@@ -126,4 +126,36 @@ public class EnrollmentsMyController : ControllerBase
             GroupName = group.GroupName
         });
     }
+    // =========================================
+    // DELETE: api/enrollments/my/{enrollmentId}
+    // Usuwa zapis tylko jeśli należy do zalogowanego usera
+    // =========================================
+    [Authorize]
+    [HttpDelete("my/{enrollmentId:int}")]
+    public async Task<IActionResult> UnenrollMy(int enrollmentId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        if (!user.StudentId.HasValue)
+            return BadRequest("User has no StudentId assigned.");
+
+        var studentId = user.StudentId.Value;
+
+        var enrollment = await _db.Enrollments
+            .FirstOrDefaultAsync(e => e.Id == enrollmentId && e.StudentId == studentId);
+
+        if (enrollment == null)
+            return NotFound("Enrollment not found or not yours.");
+
+        _db.Enrollments.Remove(enrollment);
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
