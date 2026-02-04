@@ -29,6 +29,8 @@
         <!-- dodatkowe (już masz widoki/route) -->
         <ShellContent Route="courses" Title="Courses" ContentTemplate="{DataTemplate pages:CoursesPage}" />
         <ShellContent Route="news" Title="News" ContentTemplate="{DataTemplate pages:NewsPage}" />
+        <ShellContent Route="settings" Title="Settings" ContentTemplate="{DataTemplate pages:SettingsPage}" />
+
 
         <!-- jeśli masz stronę MyEnrollmentsPage -->
         <!-- <ShellContent Route="myenrollments" Title="My Enrollments" ContentTemplate="{DataTemplate pages:MyEnrollmentsPage}" /> -->

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Victoria.Mobile.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Settings">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Label Text="Settings" FontSize="24" FontAttributes="Bold" />
+
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Change password" FontAttributes="Bold" />
+
+                    <Entry x:Name="CurrentPasswordEntry"
+                           Placeholder="Current password"
+                           IsPassword="True" />
+
+                    <Entry x:Name="NewPasswordEntry"
+                           Placeholder="New password"
+                           IsPassword="True" />
+
+                    <Entry x:Name="ConfirmPasswordEntry"
+                           Placeholder="Confirm new password"
+                           IsPassword="True" />
+
+                    <Button Text="Change password" Clicked="OnChangePasswordClicked" />
+
+                    <Label x:Name="StatusLabel" TextColor="Gray" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Account" FontAttributes="Bold" />
+                    <Button Text="Logout" Clicked="OnLogoutClicked" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

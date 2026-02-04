@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Victoria.Application.Auth;
+using Victoria.Backend.DTOs.Auth;
 using Victoria.Infrastructure.Identity;
 
 namespace Victoria.Backend.Controllers
@@ -104,5 +105,27 @@ namespace Victoria.Backend.Controllers
                 fullName = user.FullName
             });
         }
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Unauthorized();
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(string.Join(" | ", result.Errors.Select(e => e.Description)));
+
+            return Ok(new { message = "Password changed" });
+        }
+
     }
 }

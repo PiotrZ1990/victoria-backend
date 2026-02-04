@@ -29,4 +29,20 @@ public class AuthService
 
         return dto.Token;
     }
+    public async Task ChangePasswordAsync(string currentPassword, string newPassword)
+    {
+        var api = new ApiClient();
+
+        var payload = new
+        {
+            currentPassword,
+            newPassword
+        };
+
+        var json = JsonSerializer.Serialize(payload);
+
+        // ApiClient ma PostJsonAsync, to wykorzystujemy:
+        await api.PostJsonAsync("api/auth/change-password", json);
+    }
+
 }
