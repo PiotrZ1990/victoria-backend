@@ -58,6 +58,9 @@ public partial class CaseDocumentsPage : ContentPage
             Loader.IsVisible = false;
         }
         var checklist = await _checklists.GetMyChecklistAsync(_caseId);
+        var missing = checklist.Items.Count(x => x.IsRequired && !x.IsCompleted);
+        ChecklistSummaryLabel.Text = $"Missing required: {missing}";
+
         ChecklistList.ItemsSource = checklist.Items
             .OrderBy(x => x.Flow)
             .ThenByDescending(x => x.IsRequired)
@@ -142,6 +145,11 @@ public partial class CaseDocumentsPage : ContentPage
             Loader.IsRunning = false;
             Loader.IsVisible = false;
         }
+    }
+    private void OnToggleChecklistClicked(object sender, EventArgs e)
+    {
+        ChecklistPanel.IsVisible = !ChecklistPanel.IsVisible;
+        ToggleChecklistBtn.Text = ChecklistPanel.IsVisible ? "Hide checklist" : "Show checklist";
     }
 
 }

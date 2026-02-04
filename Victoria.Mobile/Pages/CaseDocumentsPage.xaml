@@ -28,24 +28,49 @@
             <VerticalStackLayout Spacing="10">
                 <Label Text="Required documents (checklist)" FontAttributes="Bold" />
 
-                <CollectionView x:Name="ChecklistList" SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame BorderColor="#eee" CornerRadius="10" Padding="10" Margin="0,0,0,8">
-                                <VerticalStackLayout Spacing="6">
-                                    <Label Text="{Binding DocumentType}" FontAttributes="Bold" />
+                <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
+                    <VerticalStackLayout Spacing="10">
 
-                                    <HorizontalStackLayout Spacing="10">
-                                        <Label Text="{Binding Flow, StringFormat='Flow: {0}'}" FontSize="12" TextColor="Gray"/>
-                                        <Label Text="{Binding IsRequired, StringFormat='Required: {0}'}" FontSize="12" TextColor="Gray"/>
-                                    </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="Checklist" FontAttributes="Bold" FontSize="16" />
+                            <Label x:Name="ChecklistSummaryLabel"
+                   Text="(loading...)"
+                   TextColor="Gray"
+                   FontSize="12"
+                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
 
-                                    <Label Text="{Binding IsCompleted, StringFormat='Completed: {0}'}" />
-                                </VerticalStackLayout>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                        <Button x:Name="ToggleChecklistBtn"
+                Text="Show checklist"
+                Clicked="OnToggleChecklistClicked" />
+
+                        <VerticalStackLayout x:Name="ChecklistPanel" IsVisible="False" Spacing="8">
+
+                            <ScrollView HeightRequest="260">
+                                <CollectionView x:Name="ChecklistList" SelectionMode="None">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame BorderColor="#eee" CornerRadius="10" Padding="10" Margin="0,0,0,8">
+                                                <VerticalStackLayout Spacing="6">
+                                                    <Label Text="{Binding DocumentType}" FontAttributes="Bold" />
+
+                                                    <HorizontalStackLayout Spacing="10">
+                                                        <Label Text="{Binding Flow}" FontSize="12" TextColor="Gray"/>
+                                                        <Label Text="{Binding IsRequired, StringFormat='Required: {0}'}" FontSize="12" TextColor="Gray"/>
+                                                    </HorizontalStackLayout>
+
+                                                    <Label Text="{Binding IsCompleted, StringFormat='Completed: {0}'}" />
+                                                </VerticalStackLayout>
+                                            </Frame>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </ScrollView>
+
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
             </VerticalStackLayout>
         </Frame>
 

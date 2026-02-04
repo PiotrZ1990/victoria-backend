@@ -12,10 +12,8 @@
         <ShellContent Route="courses" Title="Courses" ContentTemplate="{DataTemplate pages:CoursesPage}" />
         <ShellContent Route="news" Title="News" ContentTemplate="{DataTemplate pages:NewsPage}" />
         <ShellContent Route="apply" Title="Apply" ContentTemplate="{DataTemplate pages:ApplyPage}" />
+        <ShellContent Route="login" Title="Login" ContentTemplate="{DataTemplate pages:LoginPage}" />
     </TabBar>
-
-    <!-- LOGIN -->
-    <ShellContent Route="login" ContentTemplate="{DataTemplate pages:LoginPage}" />
 
     <!-- APP (logged in) -->
     <FlyoutItem x:Name="AppFlyout"
@@ -24,7 +22,16 @@
                 FlyoutDisplayOptions="AsSingleItem"
                 IsVisible="False">
 
+        <!-- główne -->
         <ShellContent Route="home" Title="Home" ContentTemplate="{DataTemplate pages:MainPage}" />
         <ShellContent Route="mycases" Title="My Cases" ContentTemplate="{DataTemplate pages:MyCasesPage}" />
+
+        <!-- dodatkowe (już masz widoki/route) -->
+        <ShellContent Route="courses" Title="Courses" ContentTemplate="{DataTemplate pages:CoursesPage}" />
+        <ShellContent Route="news" Title="News" ContentTemplate="{DataTemplate pages:NewsPage}" />
+
+        <!-- jeśli masz stronę MyEnrollmentsPage -->
+        <!-- <ShellContent Route="myenrollments" Title="My Enrollments" ContentTemplate="{DataTemplate pages:MyEnrollmentsPage}" /> -->
+
     </FlyoutItem>
 </Shell>
