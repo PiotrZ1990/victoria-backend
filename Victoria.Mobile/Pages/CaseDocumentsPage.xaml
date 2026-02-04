@@ -10,8 +10,8 @@
 
         <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="False" />
         <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
-            <VerticalStackLayout Spacing="10">
-                <Label Text="Add document" FontAttributes="Bold" />
+            <!--<VerticalStackLayout Spacing="10">
+                --><!--<Label Text="Add document" FontAttributes="Bold" />
 
                 <Entry x:Name="TitleEntry" Placeholder="Title (e.g. Passport)" />
                 <Entry x:Name="DescEntry" Placeholder="Description (optional)" />
@@ -21,12 +21,12 @@
                     <Label x:Name="PickedFileLabel" Text="No file selected" VerticalTextAlignment="Center" />
                 </HorizontalStackLayout>
 
-                <Button Text="Upload" Clicked="OnUploadClicked" />
-            </VerticalStackLayout>
+                <Button Text="Upload" Clicked="OnUploadClicked" />--><!--
+            </VerticalStackLayout>-->
         </Frame>
         <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
             <VerticalStackLayout Spacing="10">
-                <Label Text="Required documents (checklist)" FontAttributes="Bold" />
+                <Label Text="Required documents (checklist) - PLEASE SEND REQUIRED DOCUMENTS TO YOUR SUPERVISOR VIA MAIL/POST" FontAttributes="Bold" />
 
                 <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
                     <VerticalStackLayout Spacing="10">

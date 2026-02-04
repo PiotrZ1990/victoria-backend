@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Victoria.Backend.DTOs.Crm;
 using Victoria.Domain.Entities.CRM;
+using Victoria.Domain.Entities.Education;
 using Victoria.Infrastructure.Data;
 using Victoria.Infrastructure.Identity;
 
@@ -15,7 +16,6 @@ public class LeadsController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
-
 
     public LeadsController(AppDbContext dbContext, UserManager<ApplicationUser> userManager)
     {
@@ -61,14 +61,10 @@ public class LeadsController : ControllerBase
     // =========================
     [HttpGet("{id:int}")]
     [Authorize(Roles = "Staff,Admin")]
-    //[AllowAnonymous]
     public async Task<IActionResult> GetLeadById(int id)
     {
         var lead = await _dbContext.Leads.FindAsync(id);
-
-        if (lead == null)
-            return NotFound();
-
+        if (lead == null) return NotFound();
         return Ok(MapToGetDto(lead));
     }
 
@@ -78,7 +74,6 @@ public class LeadsController : ControllerBase
     // =========================
     [HttpGet]
     [Authorize(Roles = "Staff,Admin")]
-    //[AllowAnonymous]
     public async Task<IActionResult> GetAllLeads()
     {
         var leads = await _dbContext.Leads
@@ -100,9 +95,7 @@ public class LeadsController : ControllerBase
             return BadRequest(ModelState);
 
         var lead = await _dbContext.Leads.FirstOrDefaultAsync(x => x.Id == id);
-
-        if (lead == null)
-            return NotFound();
+        if (lead == null) return NotFound();
 
         lead.FullName = dto.FullName;
         lead.Email = dto.Email;
@@ -113,7 +106,6 @@ public class LeadsController : ControllerBase
         lead.Status = dto.Status;
 
         await _dbContext.SaveChangesAsync();
-
         return Ok(MapToGetDto(lead));
     }
 
@@ -126,9 +118,7 @@ public class LeadsController : ControllerBase
     public async Task<IActionResult> DeleteLead(int id)
     {
         var lead = await _dbContext.Leads.FirstOrDefaultAsync(x => x.Id == id);
-
-        if (lead == null)
-            return NotFound();
+        if (lead == null) return NotFound();
 
         _dbContext.Leads.Remove(lead);
         await _dbContext.SaveChangesAsync();
@@ -137,25 +127,7 @@ public class LeadsController : ControllerBase
     }
 
     // =========================
-    // PRIVATE MAPPER
-    // =========================
-    private static LeadGetDto MapToGetDto(Lead lead)
-    {
-        return new LeadGetDto
-        {
-            Id = lead.Id,
-            FullName = lead.FullName,
-            Email = lead.Email,
-            PhoneNumber = lead.PhoneNumber,
-            Source = lead.Source,
-            InterestedCountry = lead.InterestedCountry,
-            InterestedService = lead.InterestedService,
-            Status = lead.Status,
-            CreatedAt = lead.CreatedAt
-        };
-    }
-    // =========================
-    // CREATE CLIENT ACCOUNT FOR LEAD (STAFF, ADMIN)
+    // CREATE CLIENT ACCOUNT FOR LEAD
     // POST: api/leads/{leadId}/create-client-account
     // =========================
     [HttpPost("{leadId:int}/create-client-account")]
@@ -176,25 +148,75 @@ public class LeadsController : ControllerBase
 
         var tempPassword = "Temp#" + Guid.NewGuid().ToString("N")[..8] + "a!";
 
+        // 1) Create Identity user
+        var fullName = (lead.FullName ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(fullName))
+            fullName = email.Split('@')[0];
+
         var user = new ApplicationUser
         {
             UserName = email,
             Email = email,
             EmailConfirmed = true,
-            FullName = lead.FullName.Trim()
+            FullName = fullName
         };
 
         var res = await _userManager.CreateAsync(user, tempPassword);
         if (!res.Succeeded)
             return BadRequest(string.Join(" | ", res.Errors.Select(e => e.Description)));
 
+        // 2) Create Student + link to user.StudentId
+        var (firstName, lastName) = SplitName(user.FullName, user.Email);
+
+        var student = new Student
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            Email = user.Email,
+            Phone = lead.PhoneNumber,
+            Nationality = null,
+            DateOfBirth = null,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _dbContext.Students.Add(student);
+        await _dbContext.SaveChangesAsync();
+
+        user.StudentId = student.Id;
+        var upd = await _userManager.UpdateAsync(user);
+        if (!upd.Succeeded)
+            return BadRequest(string.Join(" | ", upd.Errors.Select(e => e.Description)));
+
         return Ok(new
         {
             userId = user.Id,
             login = email,
-            tempPassword
+            tempPassword,
+            studentId = student.Id
         });
     }
+
+    private static (string FirstName, string LastName) SplitName(string? fullName, string? email)
+    {
+        var name = (fullName ?? "").Trim();
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 1)
+                return (parts[0], "Client");
+
+            var first = parts[0];
+            var last = string.Join(" ", parts.Skip(1));
+            return (first, last);
+        }
+
+        var local = (email ?? "client").Split('@')[0].Trim();
+        if (string.IsNullOrWhiteSpace(local)) local = "Client";
+        return (local, "User");
+    }
+
     // =========================
     // ATTACH CLIENT USER TO CASEFILE BY LEAD
     // POST: api/leads/{leadId}/attach-user-to-case
@@ -219,4 +241,22 @@ public class LeadsController : ControllerBase
         });
     }
 
+    // =========================
+    // PRIVATE MAPPER
+    // =========================
+    private static LeadGetDto MapToGetDto(Lead lead)
+    {
+        return new LeadGetDto
+        {
+            Id = lead.Id,
+            FullName = lead.FullName,
+            Email = lead.Email,
+            PhoneNumber = lead.PhoneNumber,
+            Source = lead.Source,
+            InterestedCountry = lead.InterestedCountry,
+            InterestedService = lead.InterestedService,
+            Status = lead.Status,
+            CreatedAt = lead.CreatedAt
+        };
+    }
 }

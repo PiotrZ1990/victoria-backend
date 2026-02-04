@@ -84,68 +84,68 @@ public partial class CaseDocumentsPage : ContentPage
 
         await Launcher.Default.OpenAsync(url);
     }
-    private async void OnPickFileClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            var result = await FilePicker.Default.PickAsync(new PickOptions
-            {
-                PickerTitle = "Pick a document"
-            });
+    //private async void OnPickFileClicked(object sender, EventArgs e)
+    //{
+    //    try
+    //    {
+    //        var result = await FilePicker.Default.PickAsync(new PickOptions
+    //        {
+    //            PickerTitle = "Pick a document"
+    //        });
 
-            if (result == null) return;
+    //        if (result == null) return;
 
-            _pickedPath = result.FullPath;
-            PickedFileLabel.Text = Path.GetFileName(_pickedPath);
-        }
-        catch (Exception ex)
-        {
-            ErrorLabel.Text = ex.Message;
-        }
-    }
+    //        _pickedPath = result.FullPath;
+    //        PickedFileLabel.Text = Path.GetFileName(_pickedPath);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        ErrorLabel.Text = ex.Message;
+    //    }
+    //}
 
-    private async void OnUploadClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            ErrorLabel.Text = "";
+    //private async void OnUploadClicked(object sender, EventArgs e)
+    //{
+    //    try
+    //    {
+    //        ErrorLabel.Text = "";
 
-            if (string.IsNullOrWhiteSpace(_pickedPath))
-            {
-                ErrorLabel.Text = "Pick a file first.";
-                return;
-            }
+    //        if (string.IsNullOrWhiteSpace(_pickedPath))
+    //        {
+    //            ErrorLabel.Text = "Pick a file first.";
+    //            return;
+    //        }
 
-            var title = TitleEntry.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(title))
-            {
-                ErrorLabel.Text = "Title is required.";
-                return;
-            }
+    //        var title = TitleEntry.Text?.Trim();
+    //        if (string.IsNullOrWhiteSpace(title))
+    //        {
+    //            ErrorLabel.Text = "Title is required.";
+    //            return;
+    //        }
 
-            Loader.IsVisible = true;
-            Loader.IsRunning = true;
+    //        Loader.IsVisible = true;
+    //        Loader.IsRunning = true;
 
-            await _service.UploadForCaseAsync(_caseId, title!, DescEntry.Text, _pickedPath);
+    //        await _service.UploadForCaseAsync(_caseId, title!, DescEntry.Text, _pickedPath);
 
-            // reset
-            _pickedPath = null;
-            PickedFileLabel.Text = "No file selected";
-            TitleEntry.Text = "";
-            DescEntry.Text = "";
+    //        // reset
+    //        _pickedPath = null;
+    //        PickedFileLabel.Text = "No file selected";
+    //        TitleEntry.Text = "";
+    //        DescEntry.Text = "";
 
-            await LoadAsync(); // reload list
-        }
-        catch (Exception ex)
-        {
-            ErrorLabel.Text = ex.Message;
-        }
-        finally
-        {
-            Loader.IsRunning = false;
-            Loader.IsVisible = false;
-        }
-    }
+    //        await LoadAsync(); // reload list
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        ErrorLabel.Text = ex.Message;
+    //    }
+    //    finally
+    //    {
+    //        Loader.IsRunning = false;
+    //        Loader.IsVisible = false;
+    //    }
+    //}
     private void OnToggleChecklistClicked(object sender, EventArgs e)
     {
         ChecklistPanel.IsVisible = !ChecklistPanel.IsVisible;
