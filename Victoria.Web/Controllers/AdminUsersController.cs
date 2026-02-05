@@ -33,6 +33,8 @@ public class AdminUsersController : Controller
             return RedirectToAction("Login", "Auth");
 
         var resp = await Api().GetAsync("api/admin/users");
+        var guard = ApiResponseGuard.HandleAuth(resp.StatusCode);
+        if (guard != null) return guard;
         if (!resp.IsSuccessStatusCode)
             return Content($"Backend error: {(int)resp.StatusCode}\n{await resp.Content.ReadAsStringAsync()}");
 

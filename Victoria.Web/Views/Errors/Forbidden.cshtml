@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Brak dostępu";
+}
+
+<div class="container py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h2 class="mb-2">⛔ Brak dostępu (403)</h2>
+            <p class="text-muted mb-4">
+                Nie masz uprawnień do tej części systemu. Jeśli uważasz, że to błąd — skontaktuj się z administratorem.
+            </p>
+
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary" href="/Home/Dashboard">Wróć do Dashboard</a>
+                <a class="btn btn-outline-secondary" href="/Auth/Logout">Wyloguj</a>
+            </div>
+        </div>
+    </div>
+</div>
