@@ -11,8 +11,7 @@ namespace Victoria.Backend.Controllers.Documents;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
-//[Authorize(Roles = "Staff,Admin,Student")]
+[Authorize(Roles = "Admin,Staff,Student")]
 public class DocumentsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -165,8 +164,7 @@ public class DocumentsController : ControllerBase
     }
     
     [HttpPost("{id:int}/approve")]
-    //[Authorize(Roles = "Staff,Admin")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Approve(int id)
     {
         var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == id);
@@ -180,8 +178,7 @@ public class DocumentsController : ControllerBase
     }
     
     [HttpPost("{id:int}/reject")]
-    //[Authorize(Roles = "Staff,Admin")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Reject(int id, [FromBody] DocumentRejectDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Reason))

@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Cms;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo Staff/Admin
+[Authorize(Roles = "Admin,Staff")]
 public class SettingsController : ControllerBase
 {
     private readonly AppDbContext _db;

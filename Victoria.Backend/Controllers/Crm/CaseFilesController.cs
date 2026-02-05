@@ -13,8 +13,7 @@ namespace Victoria.Backend.Controllers.Crm;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
-//[Authorize(Roles = "Staff,Admin")]
+[Authorize(Roles = "Admin,Staff")]
 public class CaseFilesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;

@@ -13,8 +13,7 @@ namespace Victoria.Backend.Controllers.Reports;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
-//[Authorize(Roles = "Admin,Staff")]
+[Authorize(Roles = "Admin,Staff")]
 public class ReportsController : ControllerBase
 {
     private readonly AppDbContext _dbContext;

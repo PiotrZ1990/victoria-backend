@@ -131,7 +131,7 @@ public class LeadsController : ControllerBase
     // POST: api/leads/{leadId}/create-client-account
     // =========================
     [HttpPost("{leadId:int}/create-client-account")]
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> CreateClientAccount(int leadId)
     {
         var lead = await _dbContext.Leads.FirstOrDefaultAsync(x => x.Id == leadId);
@@ -222,7 +222,7 @@ public class LeadsController : ControllerBase
     // POST: api/leads/{leadId}/attach-user-to-case
     // =========================
     [HttpPost("{leadId:int}/attach-user-to-case")]
-    //[Authorize(Roles = "Staff,Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> AttachUserToCase(int leadId, [FromBody] string userId)
     {
         if (string.IsNullOrWhiteSpace(userId))

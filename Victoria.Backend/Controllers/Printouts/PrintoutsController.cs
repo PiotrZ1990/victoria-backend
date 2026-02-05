@@ -10,7 +10,7 @@ namespace Victoria.Backend.Controllers.Printouts;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo Staff/Admin
+[Authorize(Roles = "Admin,Staff")]
 public class PrintoutsController : ControllerBase
 {
     private readonly AppDbContext _db;

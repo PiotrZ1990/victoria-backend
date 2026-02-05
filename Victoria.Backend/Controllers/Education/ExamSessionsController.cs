@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Education;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo Staff/Admin
+[Authorize(Roles = "Admin,Staff")]
 public class ExamSessionsController : ControllerBase
 {
     private readonly AppDbContext _db;

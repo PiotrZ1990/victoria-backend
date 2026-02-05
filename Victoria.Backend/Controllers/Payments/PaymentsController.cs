@@ -10,8 +10,7 @@ namespace Victoria.Backend.Controllers.Payments;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Staff,Admin")] // docelowo
-[AllowAnonymous] // tymczasowo do testów
+[Authorize(Roles = "Admin,Staff")]
 public class PaymentsController : ControllerBase
 {
     private readonly AppDbContext _dbContext;

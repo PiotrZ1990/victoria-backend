@@ -10,7 +10,7 @@ namespace Victoria.Backend.Controllers.Documents;
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]
-//[Authorize(Roles = "Staff,Admin")]
+[Authorize(Roles = "Admin,Staff")]
 public class ChecklistsController : ControllerBase
 {
     private readonly AppDbContext _db;

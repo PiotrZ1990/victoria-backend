@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Cms;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo: [Authorize(Roles="Admin,Staff")]
+[Authorize(Roles="Admin,Staff")]
 public class NewsPostsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -46,6 +46,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts/published
     // =========================================
     [HttpGet("published")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPublished()
     {
         var list = await _db.Set<NewsPost>()

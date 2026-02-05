@@ -11,8 +11,7 @@ namespace Victoria.Backend.Controllers.Payments;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Staff,Admin")]
-[AllowAnonymous]
+[Authorize(Roles = "Admin,Staff")]
 public class InvoicesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;

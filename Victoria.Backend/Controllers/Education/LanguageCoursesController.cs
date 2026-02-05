@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Education;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous] // docelowo Staff/Admin
+[Authorize(Roles = "Admin,Staff")]
 public class LanguageCoursesController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -21,6 +21,7 @@ public class LanguageCoursesController : ControllerBase
 
     // GET: api/languagecourses
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.LanguageCourses
