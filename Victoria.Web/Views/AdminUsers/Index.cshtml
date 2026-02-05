@@ -1,0 +1,37 @@
+﻿@model List<Victoria.Web.Models.Admin.AdminUserListVm>
+@{
+    ViewData["Title"] = "Users & Roles";
+}
+
+<h2 class="mb-3">Users & Roles</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Full name</th>
+            <th>StudentId</th>
+            <th>Roles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Email</td>
+                <td>@u.FullName</td>
+                <td>@(u.StudentId?.ToString() ?? "-")</td>
+                <td>@(u.Roles.Count == 0 ? "-" : string.Join(", ", u.Roles))</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary" href="/AdminUsers/Edit/@u.Id">Edit roles</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
