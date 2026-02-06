@@ -25,6 +25,7 @@ public class EnrollmentsMyController : ControllerBase
 
     // GET: api/enrollments/my
     [HttpGet("my")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetMy()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -69,6 +70,7 @@ public class EnrollmentsMyController : ControllerBase
 
     // POST: api/enrollments/my
     [HttpPost("my")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> EnrollMy([FromBody] EnrollMyRequest req)
     {
         if (req.CourseGroupId <= 0)
@@ -130,7 +132,7 @@ public class EnrollmentsMyController : ControllerBase
     // DELETE: api/enrollments/my/{enrollmentId}
     // Usuwa zapis tylko jeśli należy do zalogowanego usera
     // =========================================
-    [Authorize]
+    [Authorize(Roles = "Admin,Staff,Student")]
     [HttpDelete("my/{enrollmentId:int}")]
     public async Task<IActionResult> UnenrollMy(int enrollmentId)
     {

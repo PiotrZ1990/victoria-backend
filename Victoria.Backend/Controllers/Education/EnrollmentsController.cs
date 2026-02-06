@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Education;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class EnrollmentsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -21,6 +21,7 @@ public class EnrollmentsController : ControllerBase
 
     // GET: api/enrollments
     [HttpGet]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.Enrollments
@@ -45,6 +46,7 @@ public class EnrollmentsController : ControllerBase
 
     // GET: api/enrollments/{id}
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetById(int id)
     {
         var x = await _db.Enrollments
@@ -70,6 +72,7 @@ public class EnrollmentsController : ControllerBase
 
     // POST: api/enrollments
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] EnrollmentCreateDto dto)
     {
         var studentExists = await _db.Students.AnyAsync(s => s.Id == dto.StudentId);
@@ -101,6 +104,7 @@ public class EnrollmentsController : ControllerBase
 
     // PUT: api/enrollments/{id}
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Update(int id, [FromBody] EnrollmentUpdateDto dto)
     {
         var entity = await _db.Enrollments.FirstOrDefaultAsync(x => x.Id == id);
@@ -115,6 +119,7 @@ public class EnrollmentsController : ControllerBase
 
     // DELETE: api/enrollments/{id}
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _db.Enrollments.FirstOrDefaultAsync(x => x.Id == id);

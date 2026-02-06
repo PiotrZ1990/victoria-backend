@@ -13,7 +13,7 @@ namespace Victoria.Backend.Controllers.Crm;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class CaseFilesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -344,8 +344,8 @@ public class CaseFilesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpGet("my")]
+    [Authorize(Roles = "Student")]
     public async Task<IActionResult> GetMyCases()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

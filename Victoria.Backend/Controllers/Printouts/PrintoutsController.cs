@@ -10,7 +10,7 @@ namespace Victoria.Backend.Controllers.Printouts;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class PrintoutsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -24,6 +24,7 @@ public class PrintoutsController : ControllerBase
 
     // GET: api/printouts/invoices/{invoiceId}/word
     [HttpGet("invoices/{invoiceId:int}/word")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> InvoiceWord(int invoiceId)
     {
         // 1) Dane faktury

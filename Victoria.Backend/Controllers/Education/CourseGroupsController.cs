@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Education;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class CourseGroupsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -21,6 +21,7 @@ public class CourseGroupsController : ControllerBase
 
     // GET: api/coursegroups
     [HttpGet]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.CourseGroups
@@ -44,6 +45,7 @@ public class CourseGroupsController : ControllerBase
 
     // GET: api/coursegroups/{id}
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetById(int id)
     {
         var x = await _db.CourseGroups
@@ -69,6 +71,7 @@ public class CourseGroupsController : ControllerBase
 
     // POST: api/coursegroups
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] CourseGroupCreateDto dto)
     {
         var courseExists = await _db.LanguageCourses.AnyAsync(x => x.Id == dto.LanguageCourseId);
@@ -97,6 +100,7 @@ public class CourseGroupsController : ControllerBase
 
     // PUT: api/coursegroups/{id}
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Update(int id, [FromBody] CourseGroupUpdateDto dto)
     {
         var entity = await _db.CourseGroups.FirstOrDefaultAsync(x => x.Id == id);
@@ -122,6 +126,7 @@ public class CourseGroupsController : ControllerBase
 
     // DELETE: api/coursegroups/{id}
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _db.CourseGroups.FirstOrDefaultAsync(x => x.Id == id);
@@ -133,6 +138,7 @@ public class CourseGroupsController : ControllerBase
     }
     // GET: api/coursegroups/by-course/{courseId}
     [HttpGet("by-course/{courseId:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetByCourse(int courseId)
     {
         var list = await _db.CourseGroups

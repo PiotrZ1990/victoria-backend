@@ -11,7 +11,7 @@ namespace Victoria.Backend.Controllers.Payments;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class InvoicesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -26,6 +26,7 @@ public class InvoicesController : ControllerBase
     // POST: api/invoices
     // =========================================
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] InvoiceCreateDto dto)
     {
         var caseFileExists = await _dbContext.CaseFiles
@@ -63,6 +64,7 @@ public class InvoicesController : ControllerBase
     // GET: api/invoices
     // =========================================
     [HttpGet]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll()
     {
         var invoices = await _dbContext.Invoices
@@ -77,6 +79,7 @@ public class InvoicesController : ControllerBase
     // GET: api/invoices/{id}
     // =========================================
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetById(int id)
     {
         var invoice = await _dbContext.Invoices
@@ -93,6 +96,7 @@ public class InvoicesController : ControllerBase
     // PUT: api/invoices/{id}
     // =========================================
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Update(int id, [FromBody] InvoiceUpdateDto dto)
     {
         var invoice = await _dbContext.Invoices
@@ -120,6 +124,7 @@ public class InvoicesController : ControllerBase
     // PUT: api/invoices/{id}/status
     // =========================================
     [HttpPut("{id:int}/status")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] InvoiceUpdateStatusDto dto)
     {
         var invoice = await _dbContext.Invoices
@@ -142,6 +147,7 @@ public class InvoicesController : ControllerBase
     // DELETE: api/invoices/{id}
     // =========================================
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var invoice = await _dbContext.Invoices
@@ -164,8 +170,8 @@ public class InvoicesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpGet("my")]
+    [Authorize(Roles = "Student")]
     public async Task<IActionResult> GetMyInvoices()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Cms;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles="Admin,Staff")]
+[Authorize]
 public class NewsPostsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -24,6 +24,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts
     // =========================================
     [HttpGet]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.Set<NewsPost>()
@@ -46,7 +47,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts/published
     // =========================================
     [HttpGet("published")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetPublished()
     {
         var list = await _db.Set<NewsPost>()
@@ -70,6 +71,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts/{id}
     // =========================================
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetById(int id)
     {
         var x = await _db.Set<NewsPost>().FirstOrDefaultAsync(a => a.Id == id);
@@ -92,6 +94,7 @@ public class NewsPostsController : ControllerBase
     // POST: api/newsposts
     // =========================================
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] NewsPostCreateDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Title))
@@ -120,6 +123,7 @@ public class NewsPostsController : ControllerBase
     // PUT: api/newsposts/{id}
     // =========================================
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Update(int id, [FromBody] NewsPostUpdateDto dto)
     {
         var entity = await _db.Set<NewsPost>().FirstOrDefaultAsync(x => x.Id == id);
@@ -156,6 +160,7 @@ public class NewsPostsController : ControllerBase
     // DELETE: api/newsposts/{id}
     // =========================================
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _db.Set<NewsPost>().FirstOrDefaultAsync(x => x.Id == id);
