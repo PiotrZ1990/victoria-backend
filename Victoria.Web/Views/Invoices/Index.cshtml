@@ -13,6 +13,27 @@
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
+<h2 class="mb-3">Leads (CRM)</h2>
+@{
+    var sort = (ViewBag.Sort as string) ?? "created_desc";
+}
+
+<form method="get" class="mb-3" style="max-width:320px;">
+    <label class="form-label">Sort</label>
+    <select class="form-select" name="sort" onchange="this.form.submit()">
+        <option value="created_desc" selected="@(sort == "created_desc")">Created: newest</option>
+        <option value="created_asc" selected="@(sort == "created_asc")">Created: oldest</option>
+
+        <option value="id_desc" selected="@(sort == "id_desc")">ID: desc</option>
+        <option value="id_asc" selected="@(sort == "id_asc")">ID: asc</option>
+
+        <option value="name_asc" selected="@(sort == "name_asc")">Name: A-Z</option>
+        <option value="name_desc" selected="@(sort == "name_desc")">Name: Z-A</option>
+
+        <option value="status_asc" selected="@(sort == "status_asc")">Status: A-Z</option>
+        <option value="status_desc" selected="@(sort == "status_desc")">Status: Z-A</option>
+    </select>
+</form>
 
 <table class="table table-striped">
     <thead>

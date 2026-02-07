@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Victoria.Domain.Entities.CRM;
 using Victoria.Web.Models.Payments;
 
 namespace Victoria.Web.Controllers.Payments;
@@ -31,7 +32,7 @@ public class InvoicesController : Controller
     // GET: /Invoices
     // =========================================
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -50,7 +51,31 @@ public class InvoicesController : Controller
                 json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            return View(invoices ?? new());
+            // ✅ SORTOWANIE po stronie WEB
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            invoices = sort switch
+            {
+                "created_asc" => invoices.OrderBy(x => x.IssueDate).ToList(),
+                "created_desc" => invoices.OrderByDescending(x => x.IssueDate).ToList(),
+
+                "id_asc" => invoices.OrderBy(x => x.Id).ToList(),
+                "id_desc" => invoices.OrderByDescending(x => x.Id).ToList(),
+
+                "name_asc" => invoices.OrderBy(x => x.InvoiceNumber).ToList(),
+                "name_desc" => invoices.OrderByDescending(x => x.InvoiceNumber).ToList(),
+
+                "status_asc" => invoices.OrderBy(x => x.Status).ToList(),
+                "status_desc" => invoices.OrderByDescending(x => x.Status).ToList(),
+
+                "country_asc" => invoices.OrderBy(x => x.Status).ToList(),
+                "country_desc" => invoices.OrderByDescending(x => x.Status).ToList(),
+
+                _ => invoices.OrderByDescending(x => x.IssueDate).ToList()
+            };
+
+            ViewBag.Sort = sort;
+            return View(invoices);
+
         }
         catch (UnauthorizedAccessException)
         {

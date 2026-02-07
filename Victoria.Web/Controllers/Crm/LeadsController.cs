@@ -41,7 +41,7 @@ public class LeadsController : Controller
     // GET: /Leads
     // =========================================
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -56,9 +56,29 @@ public class LeadsController : Controller
             var json = await response.Content.ReadAsStringAsync();
             var leads = JsonSerializer.Deserialize<List<LeadViewModel>>(json, JsonOptions) ?? new();
 
-            // sortowanie po dacie po stronie web (szybko)
-            leads = leads.OrderByDescending(x => x.CreatedAt).ToList();
+            // ✅ SORTOWANIE po stronie WEB
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            leads = sort switch
+            {
+                "created_asc" => leads.OrderBy(x => x.CreatedAt).ToList(),
+                "created_desc" => leads.OrderByDescending(x => x.CreatedAt).ToList(),
 
+                "id_asc" => leads.OrderBy(x => x.Id).ToList(),
+                "id_desc" => leads.OrderByDescending(x => x.Id).ToList(),
+
+                "name_asc" => leads.OrderBy(x => x.FullName).ToList(),
+                "name_desc" => leads.OrderByDescending(x => x.FullName).ToList(),
+
+                "status_asc" => leads.OrderBy(x => x.Status).ToList(),
+                "status_desc" => leads.OrderByDescending(x => x.Status).ToList(),
+
+                "country_asc" => leads.OrderBy(x => x.InterestedCountry).ToList(),
+                "country_desc" => leads.OrderByDescending(x => x.InterestedCountry).ToList(),
+
+                _ => leads.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+
+            ViewBag.Sort = sort;
             return View(leads);
         }
         catch (UnauthorizedAccessException)

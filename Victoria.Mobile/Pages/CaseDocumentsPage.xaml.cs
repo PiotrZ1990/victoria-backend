@@ -39,24 +39,24 @@ public partial class CaseDocumentsPage : ContentPage
 
     private async Task LoadAsync()
     {
-        try
-        {
-            ErrorLabel.Text = "";
-            Loader.IsVisible = true;
-            Loader.IsRunning = true;
+        //try
+        //{
+        //    ErrorLabel.Text = "";
+        //    Loader.IsVisible = true;
+        //    Loader.IsRunning = true;
 
-            var list = await _service.GetForCaseAsync(_caseId);
-            DocsList.ItemsSource = list;
-        }
-        catch (Exception ex)
-        {
-            ErrorLabel.Text = ex.Message;
-        }
-        finally
-        {
-            Loader.IsRunning = false;
-            Loader.IsVisible = false;
-        }
+        //    var list = await _service.GetForCaseAsync(_caseId);
+        //    DocsList.ItemsSource = list;
+        //}
+        //catch (Exception ex)
+        //{
+        //    ErrorLabel.Text = ex.Message;
+        //}
+        //finally
+        //{
+        //    Loader.IsRunning = false;
+        //    Loader.IsVisible = false;
+        //}
         var checklist = await _checklists.GetMyChecklistAsync(_caseId);
         var missing = checklist.Items.Count(x => x.IsRequired && !x.IsCompleted);
         ChecklistSummaryLabel.Text = $"Missing required: {missing}";

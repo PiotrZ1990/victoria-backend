@@ -74,7 +74,7 @@
             </VerticalStackLayout>
         </Frame>
 
-        <CollectionView x:Name="DocsList"
+        <!--<CollectionView x:Name="DocsList"
                         SelectionMode="Single"
                         SelectionChanged="OnSelectionChanged">
             <CollectionView.ItemTemplate>
@@ -90,7 +90,7 @@
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView>
+        </CollectionView>-->
 
         <Label x:Name="ErrorLabel" TextColor="Red" />
     </VerticalStackLayout>
