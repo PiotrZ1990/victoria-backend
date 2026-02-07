@@ -1,4 +1,5 @@
-﻿using Victoria.Mobile.Services;
+﻿using Victoria.Mobile.Models;
+using Victoria.Mobile.Services;
 
 namespace Victoria.Mobile.Pages;
 
@@ -57,8 +58,32 @@ public partial class CourseDetailsPage : ContentPage
             MetaLabel.Text = $"Level: {course.Level ?? "-"} | Price: {course.Price:0.00} {course.Currency}";
             DescLabel.Text = course.Description ?? "";
 
-            var list = await _groups.GetByCourseAsync(_courseId);
-            GroupsList.ItemsSource = list;
+            var groups = await _groups.GetByCourseAsync(_courseId);
+            var my = await _enrollments.GetMyAsync();
+
+            // mapa: CourseGroupId -> Enrollment
+            var myMap = my.ToDictionary(x => x.CourseGroupId, x => x);
+
+            // wrappery UI
+            var ui = groups.Select(g =>
+            {
+                var enrolled = myMap.TryGetValue(g.Id, out var enr);
+
+                return new CourseGroupUiModel
+                {
+                    Id = g.Id,
+                    GroupName = g.GroupName,
+                    StartDate = g.StartDate,
+                    EndDate = g.EndDate,
+                    Capacity = g.Capacity,
+                    IsActive = g.IsActive,
+
+                    IsEnrolled = enrolled,
+                    EnrollmentId = enrolled ? enr!.Id : null
+                };
+            }).ToList();
+
+            GroupsList.ItemsSource = ui;
         }
         catch (Exception ex)
         {
@@ -76,15 +101,36 @@ public partial class CourseDetailsPage : ContentPage
         try
         {
             var btn = (Button)sender;
-
-            if (btn.CommandParameter == null)
-                throw new Exception("Missing group id.");
-
             var groupId = Convert.ToInt32(btn.CommandParameter);
 
             await _enrollments.EnrollMyAsync(groupId);
 
             await DisplayAlert("OK", "You are enrolled ✅", "Close");
+            await LoadAsync(); // przełącz UI
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "Close");
+        }
+    }
+
+    private async void OnUnenrollClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var btn = (Button)sender;
+            if (btn.CommandParameter == null)
+                throw new Exception("Missing enrollment id.");
+
+            var enrollmentId = Convert.ToInt32(btn.CommandParameter);
+
+            var ok = await DisplayAlert("Confirm", "Unenroll from this course group?", "Yes", "No");
+            if (!ok) return;
+
+            await _enrollments.UnenrollMyAsync(enrollmentId);
+
+            await DisplayAlert("OK", "Unenrolled ✅", "Close");
+            await LoadAsync(); // przełącz UI
         }
         catch (Exception ex)
         {

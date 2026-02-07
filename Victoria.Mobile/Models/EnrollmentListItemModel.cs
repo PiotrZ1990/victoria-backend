@@ -14,4 +14,5 @@ public class EnrollmentListItemModel
     public string? Location { get; set; }
 
     public DateTime CreatedAt { get; set; }
+    public DateTime EnrolledAt { get; set; }
 }

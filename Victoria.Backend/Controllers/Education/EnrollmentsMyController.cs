@@ -160,4 +160,41 @@ public class EnrollmentsMyController : ControllerBase
 
         return NoContent();
     }
+    // GET: api/enrollments/my/by-group/{courseGroupId}
+    // Zwraca enrollment jeśli user jest zapisany na daną grupę
+    [HttpGet("my/by-group/{courseGroupId:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
+    public async Task<IActionResult> GetMyByGroup(int courseGroupId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        if (!user.StudentId.HasValue)
+            return BadRequest("This user is not linked to Student (StudentId is NULL).");
+
+        var studentId = user.StudentId.Value;
+
+        var e = await _db.Enrollments
+            .Include(x => x.CourseGroup).ThenInclude(g => g.LanguageCourse)
+            .FirstOrDefaultAsync(x => x.StudentId == studentId && x.CourseGroupId == courseGroupId);
+
+        if (e == null)
+            return NotFound();
+
+        return Ok(new
+        {
+            e.Id,
+            e.StudentId,
+            e.CourseGroupId,
+            CourseName = e.CourseGroup.LanguageCourse.Name,
+            GroupName = e.CourseGroup.GroupName,
+            e.EnrolledAt
+        });
+    }
+
 }

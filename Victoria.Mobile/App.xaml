@@ -9,6 +9,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary>
+                    <helpers:InverseBoolConverter x:Key="InverseBoolConverter" />
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <helpers:NullToBoolConverter x:Key="NullToBoolConverter" />
         </ResourceDictionary>

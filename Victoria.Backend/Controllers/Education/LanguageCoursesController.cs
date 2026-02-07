@@ -9,7 +9,7 @@ namespace Victoria.Backend.Controllers.Education;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Staff")]
+[Authorize]
 public class LanguageCoursesController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -44,6 +44,7 @@ public class LanguageCoursesController : ControllerBase
 
     // GET: api/languagecourses/{id}
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public async Task<IActionResult> GetById(int id)
     {
         var x = await _db.LanguageCourses.FirstOrDefaultAsync(a => a.Id == id);
@@ -66,6 +67,7 @@ public class LanguageCoursesController : ControllerBase
 
     // POST: api/languagecourses
     [HttpPost]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Create([FromBody] LanguageCourseCreateDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Name)) return BadRequest("Name is required");
@@ -94,6 +96,7 @@ public class LanguageCoursesController : ControllerBase
 
     // PUT: api/languagecourses/{id}
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Update(int id, [FromBody] LanguageCourseUpdateDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Name)) return BadRequest("Name is required");
@@ -119,6 +122,7 @@ public class LanguageCoursesController : ControllerBase
 
     // DELETE: api/languagecourses/{id}
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _db.LanguageCourses.FirstOrDefaultAsync(x => x.Id == id);

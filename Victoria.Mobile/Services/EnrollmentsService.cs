@@ -26,4 +26,18 @@ public class EnrollmentsService
     }
     public Task UnenrollMyAsync(int enrollmentId)
        => _api.DeleteAsync($"api/enrollments/my/{enrollmentId}");
+    public async Task<EnrollmentListItemModel?> GetMyByGroupAsync(int courseGroupId)
+    {
+        try
+        {
+            var json = await _api.GetStringAsync($"api/enrollments/my/by-group/{courseGroupId}");
+            return JsonSerializer.Deserialize<EnrollmentListItemModel>(json, JsonOpts);
+        }
+        catch (Exception ex)
+        {
+            // jeśli backend zwróci 404, ApiClient rzuci wyjątek – obsłużymy to wprost:
+            if (ex.Message.Contains("404")) return null;
+            throw;
+        }
+    }
 }

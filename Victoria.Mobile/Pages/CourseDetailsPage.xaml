@@ -16,9 +16,7 @@
 
             <ActivityIndicator x:Name="Loader" IsRunning="False" IsVisible="False" />
 
-            <CollectionView x:Name="GroupsList"
-                            SelectionMode="Single"
-                            SelectionChanged="OnGroupSelected">
+            <CollectionView x:Name="GroupsList" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame BorderColor="#ddd" CornerRadius="12" Padding="12">
@@ -26,16 +24,26 @@
                                 <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
                                 <Label Text="{Binding StartDate, StringFormat='Start: {0:yyyy-MM-dd}'}" />
                                 <Label Text="{Binding EndDate, StringFormat='End: {0:yyyy-MM-dd}'}" />
-                                <Label Text="{Binding Capacity, StringFormat='Capacity: {0}'}" FontSize="12" TextColor="Gray" />
-                                <Button Text="Enroll"
-                                    Clicked="OnEnrollClicked"
-                                    CommandParameter="{Binding Id}" />
+                                <Label Text="{Binding Capacity, StringFormat='Capacity: {0}'}"
+                           FontSize="12" TextColor="Gray" />
 
+                                <!-- ENROLL -->
+                                <Button Text="Enroll"
+                            Clicked="OnEnrollClicked"
+                            CommandParameter="{Binding Id}"
+                            IsVisible="{Binding IsEnrolled, Converter={StaticResource InverseBoolConverter}}" />
+
+                                <!-- UNENROLL -->
+                                <Button Text="Unenroll"
+                            Clicked="OnUnenrollClicked"
+                            CommandParameter="{Binding EnrollmentId}"
+                            IsVisible="{Binding IsEnrolled}" />
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
 
             <Label x:Name="ErrorLabel" TextColor="Red" />
 
