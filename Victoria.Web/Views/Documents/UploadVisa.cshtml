@@ -17,10 +17,24 @@
     <input type="hidden" asp-for="VisaApplicationId" />
 
     <div class="mb-3">
-        <label class="form-label">Title (DocumentType)</label>
-        <input class="form-control" asp-for="Title" />
+        <label class="form-label">Document type</label>
+
+        <select class="form-select" asp-for="Title">
+            <option value="">-- select --</option>
+
+            <option value="Passport">Passport</option>
+            <option value="Acceptance letter">Acceptance letter</option>
+            <option value="Visa application form">Visa application form</option>
+            <option value="Proof of accommodation">Proof of accommodation</option>
+            <option value="Travel insurance">Travel insurance</option>
+            <option value="Bank statements / proof of funds">Bank statements / proof of funds</option>
+        </select>
+
+
         <span class="text-danger" asp-validation-for="Title"></span>
+        <div class="form-text">Must match checklist DocumentType exactly.</div>
     </div>
+
 
     <div class="mb-3">
         <label class="form-label">Description (optional)</label>

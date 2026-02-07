@@ -16,10 +16,24 @@
     <input type="hidden" asp-for="StudyApplicationId" />
 
     <div class="mb-3">
-        <label class="form-label">Title (DocumentType)</label>
-        <input class="form-control" asp-for="Title" />
+        <label class="form-label">Document type</label>
+
+        <select class="form-select" asp-for="Title">
+            <option value="">-- select --</option>
+
+            <option value="Passport scan">Passport scan</option>
+            <option value="CV">CV</option>
+            <option value="Motivation letter">Motivation letter</option>
+            <option value="School certificates / diplomas">School certificates / diplomas</option>
+            <option value="English test certificate (optional)">English test certificate (optional)</option>
+            <option value="Proof of funds (if needed)">Proof of funds (if needed)</option>
+        </select>
+
+
         <span class="text-danger" asp-validation-for="Title"></span>
+        <div class="form-text">Must match checklist DocumentType exactly (ważne dla Approve/Reject).</div>
     </div>
+
 
     <div class="mb-3">
         <label class="form-label">Description (optional)</label>

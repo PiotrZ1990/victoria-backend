@@ -87,7 +87,12 @@ public partial class CourseDetailsPage : ContentPage
         }
         catch (Exception ex)
         {
-            ErrorLabel.Text = ex.Message;
+            var msg = ex.Message ?? "";
+
+            if (msg.Contains("401") || msg.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase))
+                ErrorLabel.Text = "Course details are available only for logged-in users.";
+            else
+                ErrorLabel.Text = msg;
         }
         finally
         {

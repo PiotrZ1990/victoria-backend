@@ -96,19 +96,30 @@ public class CaseFilesController : ControllerBase
         return Ok(MapToGetDto(caseFile));
     }
 
-    // =========================================
-    // GET ALL CASEFILES
-    // GET: api/casefiles
-    // =========================================
+    // GET: api/casefiles?sort=created_desc
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] string? sort = null)
     {
-        var caseFiles = await _dbContext.CaseFiles
-            .OrderByDescending(x => x.CreatedAt)
-            .ToListAsync();
+        var q = _dbContext.CaseFiles.AsQueryable();
 
+        q = (sort ?? "created_desc").ToLowerInvariant() switch
+        {
+            "created_asc" => q.OrderBy(x => x.CreatedAt),
+            "created_desc" => q.OrderByDescending(x => x.CreatedAt),
+
+            "id_asc" => q.OrderBy(x => x.Id),
+            "id_desc" => q.OrderByDescending(x => x.Id),
+
+            "stage_asc" => q.OrderBy(x => x.Stage),
+            "stage_desc" => q.OrderByDescending(x => x.Stage),
+
+            _ => q.OrderByDescending(x => x.CreatedAt)
+        };
+
+        var caseFiles = await q.ToListAsync();
         return Ok(caseFiles.Select(MapToGetDto).ToList());
     }
+
 
     // =========================================
     // GET CASEFILE BY ID

@@ -24,7 +24,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts
     // =========================================
     [HttpGet]
-    [Authorize(Roles = "Admin,Staff,Student")]
+    [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.Set<NewsPost>()
@@ -47,7 +47,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts/published
     // =========================================
     [HttpGet("published")]
-    [Authorize(Roles = "Admin,Staff")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPublished()
     {
         var list = await _db.Set<NewsPost>()
@@ -71,7 +71,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts/{id}
     // =========================================
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin,Staff,Student")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(int id)
     {
         var x = await _db.Set<NewsPost>().FirstOrDefaultAsync(a => a.Id == id);

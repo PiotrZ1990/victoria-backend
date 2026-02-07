@@ -40,19 +40,24 @@ public class CaseFilesController : Controller
     // GET: /CaseFiles
     // =========================
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort)
     {
         try
         {
             var client = Api();
 
-            var response = await client.GetAsync("api/casefiles");
+            var url = "api/casefiles";
+            if (!string.IsNullOrWhiteSpace(sort))
+                url += $"?sort={Uri.EscapeDataString(sort)}";
+
+            var response = await client.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 throw new Exception("Failed to load case files from API");
 
             var json = await response.Content.ReadAsStringAsync();
             var caseFiles = JsonSerializer.Deserialize<List<CaseFileViewModel>>(json, JsonOpts) ?? new();
 
+            ViewBag.Sort = sort ?? "created_desc";
             return View(caseFiles);
         }
         catch (UnauthorizedAccessException)
