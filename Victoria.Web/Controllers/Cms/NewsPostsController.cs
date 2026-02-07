@@ -31,7 +31,7 @@ public class NewsPostsController : Controller
     // =========================
     // LIST
     // =========================
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         var client = Api();
 
@@ -40,9 +40,18 @@ public class NewsPostsController : Controller
             throw new Exception("Failed to load news");
 
         var json = await resp.Content.ReadAsStringAsync();
-        var list = JsonSerializer.Deserialize<List<NewsPostListViewModel>>(json, JsonOpts) ?? new();
+        var items = JsonSerializer.Deserialize<List<NewsPostListViewModel>>(json, JsonOpts) ?? new();
 
-        return View(list);
+        sort = (sort ?? "created_desc").ToLowerInvariant();
+        items = sort switch
+        {
+            "created_asc" => items.OrderBy(x => x.CreatedAt).ToList(),
+            "created_desc" => items.OrderByDescending(x => x.CreatedAt).ToList(),
+
+            _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+        };
+        ViewBag.Sort = sort;
+        return View(items);
     }
 
     // =========================

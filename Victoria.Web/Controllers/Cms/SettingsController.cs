@@ -28,7 +28,7 @@ public class SettingsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -37,8 +37,17 @@ public class SettingsController : Controller
             if (!resp.IsSuccessStatusCode) throw new Exception("Failed");
 
             var json = await resp.Content.ReadAsStringAsync();
-            var list = JsonSerializer.Deserialize<List<SettingListViewModel>>(json, JsonOpts) ?? new();
-            return View(list);
+            var items = JsonSerializer.Deserialize<List<SettingListViewModel>>(json, JsonOpts) ?? new();
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            items = sort switch
+            {
+                "created_asc" => items.OrderBy(x => x.UpdatedAt).ToList(),
+                "created_desc" => items.OrderByDescending(x => x.UpdatedAt).ToList(),
+
+                _ => items.OrderByDescending(x => x.UpdatedAt).ToList()
+            };
+            ViewBag.Sort = sort;
+            return View(items);
         }
         catch (UnauthorizedAccessException)
         {

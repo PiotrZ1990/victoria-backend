@@ -28,7 +28,7 @@ public class CourseGroupsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -37,9 +37,17 @@ public class CourseGroupsController : Controller
             if (!resp.IsSuccessStatusCode) throw new Exception("Failed");
 
             var json = await resp.Content.ReadAsStringAsync();
-            var list = JsonSerializer.Deserialize<List<CourseGroupListViewModel>>(json, JsonOpts) ?? new();
+            var items = JsonSerializer.Deserialize<List<CourseGroupListViewModel>>(json, JsonOpts) ?? new();
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            items = sort switch
+            {
+                "created_asc" => items.OrderBy(x => x.StartDate).ToList(),
+                "created_desc" => items.OrderByDescending(x => x.StartDate).ToList(),
 
-            return View(list);
+                _ => items.OrderByDescending(x => x.StartDate).ToList()
+            };
+            ViewBag.Sort = sort;
+            return View(items);
         }
         catch (UnauthorizedAccessException)
         {

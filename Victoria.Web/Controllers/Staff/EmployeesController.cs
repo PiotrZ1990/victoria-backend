@@ -27,7 +27,7 @@ public class EmployeesController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -36,9 +36,18 @@ public class EmployeesController : Controller
             if (!resp.IsSuccessStatusCode) throw new Exception("Failed to load employees");
 
             var json = await resp.Content.ReadAsStringAsync();
-            var list = JsonSerializer.Deserialize<List<EmployeeViewModel>>(json, JsonOpts) ?? new();
+            var items = JsonSerializer.Deserialize<List<EmployeeViewModel>>(json, JsonOpts) ?? new();
 
-            return View(list);
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            items = sort switch
+            {
+                "created_asc" => items.OrderBy(x => x.CreatedAt).ToList(),
+                "created_desc" => items.OrderByDescending(x => x.CreatedAt).ToList(),
+
+                _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+            ViewBag.Sort = sort;
+            return View(items);
         }
         catch (UnauthorizedAccessException)
         {

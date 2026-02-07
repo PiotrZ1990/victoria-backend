@@ -5,7 +5,18 @@
 }
 
 <h2 class="mb-3">Page Sections</h2>
+@{
+    var sort = (ViewBag.Sort as string) ?? "created_desc";
+}
 
+<form method="get" class="mb-3" style="max-width:320px;">
+    <label class="form-label">Sort</label>
+    <select class="form-select" name="sort" onchange="this.form.submit()">
+        <option value="created_desc" selected="@(sort == "created_desc")">Created: newest</option>
+        <option value="created_asc" selected="@(sort == "created_asc")">Created: oldest</option>
+
+    </select>
+</form>
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">@TempData["Success"]</div>

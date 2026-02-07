@@ -29,7 +29,7 @@ public class TestimonialsController : Controller
 
     // GET: /Testimonials
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -38,9 +38,18 @@ public class TestimonialsController : Controller
             if (!resp.IsSuccessStatusCode) throw new Exception("Failed");
 
             var json = await resp.Content.ReadAsStringAsync();
-            var list = JsonSerializer.Deserialize<List<TestimonialListViewModel>>(json, JsonOpts) ?? new();
+            var items = JsonSerializer.Deserialize<List<TestimonialListViewModel>>(json, JsonOpts) ?? new();
 
-            return View(list);
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            items = sort switch
+            {
+                "created_asc" => items.OrderBy(x => x.CreatedAt).ToList(),
+                "created_desc" => items.OrderByDescending(x => x.CreatedAt).ToList(),
+
+                _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+            ViewBag.Sort = sort;
+            return View(items);
         }
         catch (UnauthorizedAccessException)
         {

@@ -28,7 +28,7 @@ public class StudentsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? sort = "created_desc")
     {
         try
         {
@@ -37,9 +37,17 @@ public class StudentsController : Controller
             if (!resp.IsSuccessStatusCode) throw new Exception("Failed to load students");
 
             var json = await resp.Content.ReadAsStringAsync();
-            var list = JsonSerializer.Deserialize<List<StudentListViewModel>>(json, JsonOpts) ?? new();
+            var items = JsonSerializer.Deserialize<List<StudentListViewModel>>(json, JsonOpts) ?? new();
+            sort = (sort ?? "created_desc").ToLowerInvariant();
+            items = sort switch
+            {
+                "created_asc" => items.OrderBy(x => x.CreatedAt).ToList(),
+                "created_desc" => items.OrderByDescending(x => x.CreatedAt).ToList(),
 
-            return View(list);
+                _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+            ViewBag.Sort = sort;
+            return View(items);
         }
         catch (UnauthorizedAccessException)
         {
