@@ -174,7 +174,7 @@ public class DocumentsController : ControllerBase
         doc.Status = Domain.Enums.DocumentStatus.Approved;
         await _db.SaveChangesAsync();
 
-        return Ok(new { doc.Id, doc.Status });
+          return await UpdateStatus(id, new DocumentStatusUpdateDto { Status = "Approved" });
     }
     
     [HttpPost("{id:int}/reject")]
@@ -184,19 +184,18 @@ public class DocumentsController : ControllerBase
         if (string.IsNullOrWhiteSpace(dto.Reason))
             return BadRequest("Reason is required");
 
+        // zapisujemy reason
         var doc = await _db.Documents.FirstOrDefaultAsync(x => x.Id == id);
         if (doc == null)
             return NotFound("Document not found");
 
-        doc.Status = Domain.Enums.DocumentStatus.Rejected;
-
-        // zapisujemy powód w Description (masz już to pole)
         doc.Description = dto.Reason;
-
         await _db.SaveChangesAsync();
 
-        return Ok(new { doc.Id, doc.Status, doc.Description });
+        // i lecimy przez pipeline statusu (cofnie checklistę)
+        return await UpdateStatus(id, new DocumentStatusUpdateDto { Status = "Rejected" });
     }
+
 
     [HttpPut("{documentId:int}/status")]
     public async Task<IActionResult> UpdateStatus(int documentId, [FromBody] DocumentStatusUpdateDto dto)
@@ -237,10 +236,10 @@ public class DocumentsController : ControllerBase
                 var caseFileId = appLink.StudyApplication.CaseFileId;
 
                 var item = await _db.CaseApplicationChecklistItems
-                    .Include(x => x.Checklist)
-                    .FirstOrDefaultAsync(x =>
-                        x.CaseFileId == caseFileId &&
-                        x.Checklist.DocumentType == doc.DocumentType);
+             .Include(x => x.Checklist)
+             .FirstOrDefaultAsync(x =>
+                 x.CaseFileId == caseFileId &&
+                    x.Checklist.DocumentType.Trim().ToLower() == doc.DocumentType.Trim().ToLower());
 
                 if (item != null)
                 {
@@ -267,7 +266,8 @@ public class DocumentsController : ControllerBase
                     .Include(x => x.Checklist)
                     .FirstOrDefaultAsync(x =>
                         x.CaseFileId == caseFileId &&
-                        x.Checklist.DocumentType == doc.DocumentType);
+                        x.Checklist.DocumentType.Trim().ToLower() == doc.DocumentType.Trim().ToLower());
+
 
                 if (item != null)
                 {
