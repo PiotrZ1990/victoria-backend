@@ -24,7 +24,7 @@ public class NewsPostsController : ControllerBase
     // GET: api/newsposts
     // =========================================
     [HttpGet]
-    [Authorize(Roles = "Admin,Staff")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var list = await _db.Set<NewsPost>()
